@@ -42,15 +42,17 @@ if ([string]::IsNullOrWhiteSpace($slug)) {
 }
 
 $dateStamp = Get-Date -Format "yyyy-MM-dd"
-$fileName = "$dateStamp-$slug.md"
-$filePath = Join-Path $postsDir $fileName
+$slugDirName = "$dateStamp-$slug"
+$postDir = Join-Path $postsDir $slugDirName
 
 $suffix = 1
-while (Test-Path $filePath) {
-    $fileName = "$dateStamp-$slug-$suffix.md"
-    $filePath = Join-Path $postsDir $fileName
+while (Test-Path $postDir) {
+    $slugDirName = "$dateStamp-$slug-$suffix"
+    $postDir = Join-Path $postsDir $slugDirName
     $suffix++
 }
+
+$filePath = Join-Path $postDir "index.md"
 
 $dateIso = Get-Date -Format "yyyy-MM-ddTHH:mm:sszzz"
 
@@ -67,7 +69,7 @@ summary: ""
 여기에 본문을 작성하세요.
 "@
 
-New-Item -ItemType Directory -Force -Path $postsDir | Out-Null
+New-Item -ItemType Directory -Force -Path $postDir | Out-Null
 Set-Content -Path $filePath -Value $frontMatter -Encoding utf8
 
 Write-Host ""
