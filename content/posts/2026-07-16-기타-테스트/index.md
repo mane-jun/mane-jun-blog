@@ -8,4 +8,4 @@ summary: ""
 ---
 
 고작 몇킬로 걷지도 못하면서...
-![alt text](image.png)
+![IMAGE 텍스트가 적힌 플레이스홀더 이미지](image.png)

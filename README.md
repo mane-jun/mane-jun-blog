@@ -23,7 +23,7 @@ cd D:\Projects\mane-jun-blog
 .\scripts\new-post.ps1
 ```
 
-제목 → 카테고리 번호 선택 → 태그(선택) 순으로 입력하면 `content/posts/`에 front matter가 채워진 파일이 생성되고 에디터가 자동으로 열립니다.
+제목 → 카테고리 번호 선택 → 태그(선택) 순으로 입력하면 `content/posts/<슬러그>/index.md`에 front matter가 채워진 파일이 생성되고 에디터가 자동으로 열립니다.
 
 ### 방법 2: 직접 파일 생성
 
