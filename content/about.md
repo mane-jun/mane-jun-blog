@@ -2,7 +2,7 @@
 title: "소개"
 date: 2026-07-16T09:00:00+09:00
 draft: false
-hidemeta: true
+hiddenFromHomePage: true
 ---
 
 안녕하세요, mane-jun입니다.

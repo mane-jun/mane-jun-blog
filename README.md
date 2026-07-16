@@ -1,6 +1,6 @@
 # mane-jun's log
 
-개발 기록, 일상, 생각을 남기는 개인 블로그. [Hugo](https://gohugo.io/) + [PaperMod](https://github.com/adityatelange/hugo-PaperMod) 테마로 만들었고, GitHub Actions로 GitHub Pages에 자동 배포됩니다.
+개발 기록, 일상, 생각을 남기는 개인 블로그. [Hugo](https://gohugo.io/) + [LoveIt](https://github.com/dillonzq/LoveIt) 테마로 만들었고, GitHub Actions로 GitHub Pages에 자동 배포됩니다.
 
 - 사이트: https://mane-jun.github.io/mane-jun-blog/
 - 로컬 경로: `D:\Projects\mane-jun-blog`
@@ -82,22 +82,23 @@ mane-jun-blog/
 ├── archetypes/                    # hugo new content 시 기본 템플릿
 ├── content/
 │   ├── about.md                   # 소개 페이지
-│   ├── search.md                  # 검색 페이지
 │   └── posts/                     # 모든 글
 ├── scripts/
 │   └── new-post.ps1               # 새 글 작성 도우미 스크립트
-├── themes/PaperMod/                # 테마 (git submodule)
+├── themes/LoveIt/                  # 테마 (git submodule)
 └── hugo.toml                      # 사이트 설정
 ```
 
+검색은 별도 페이지 없이 헤더의 검색 아이콘(LoveIt 내장 fuse.js 검색)으로 제공됩니다.
+
 ## 테마 업데이트
 
-PaperMod는 git submodule이라 별도로 업데이트해야 합니다.
+LoveIt은 git submodule이라 별도로 업데이트해야 합니다.
 
 ```bash
 git submodule update --remote --merge
-git add themes/PaperMod
-git commit -m "PaperMod 테마 업데이트"
+git add themes/LoveIt
+git commit -m "LoveIt 테마 업데이트"
 git push
 ```
 

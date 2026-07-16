@@ -1,116 +1,250 @@
-baseURL = "https://mane-jun.github.io/"
-locale = "ko-kr"
-defaultContentLanguage = "ko"
+baseURL = "https://mane-jun.github.io/mane-jun-blog/"
+theme = "LoveIt"
+
 title = "mane-jun's log"
-theme = "PaperMod"
-paginate = 10
+defaultContentLanguage = "ko"
+languageCode = "ko"
+languageName = "한국어"
+hasCJKLanguage = true
+
+copyright = ""
 
 enableRobotsTXT = true
-enableEmojify = true
-hasCJKLanguage = true
-pygmentsUseClasses = true
+enableGitInfo = false
+enableEmoji = true
 
 [pagination]
+  disableAliases = false
   pagerSize = 10
-
-[minify]
-  disableXML = true
+  path = "page"
 
 [taxonomies]
   category = "categories"
   tag = "tags"
 
+[menu]
+  [[menu.main]]
+    weight = 1
+    identifier = "posts"
+    pre = ""
+    post = ""
+    name = "전체글"
+    url = "/posts/"
+    title = ""
+  [[menu.main]]
+    weight = 2
+    identifier = "categories"
+    pre = ""
+    post = ""
+    name = "카테고리"
+    url = "/categories/"
+    title = ""
+  [[menu.main]]
+    weight = 3
+    identifier = "tags"
+    pre = ""
+    post = ""
+    name = "태그"
+    url = "/tags/"
+    title = ""
+  [[menu.main]]
+    weight = 4
+    identifier = "about"
+    pre = ""
+    post = ""
+    name = "소개"
+    url = "/about/"
+    title = ""
+  [[menu.main]]
+    weight = 5
+    identifier = "github"
+    pre = "<i class='fab fa-github' aria-hidden='true'></i>"
+    post = ""
+    name = ""
+    url = "https://github.com/mane-jun"
+    title = "GitHub"
+
 [params]
-  env = "production"
+  defaultTheme = "dark"
+  gitRepo = "https://github.com/mane-jun/mane-jun-blog"
+  fingerprint = ""
+  dateFormat = "2006-01-02"
   title = "mane-jun's log"
   description = "개발 기록, 일상, 생각을 남기는 공간"
-  keywords = ["Blog", "개발", "회고", "생각"]
-  author = "mane-jun"
-  defaultTheme = "dark"
-  disableThemeToggle = false
-  ShowShareButtons = false
-  ShowReadingTime = true
-  displayFullLangName = true
-  ShowPostNavLinks = true
-  ShowBreadCrumbs = true
-  ShowCodeCopyButtons = true
-  ShowWordCount = true
-  ShowRssButtonInSectionTermList = true
-  ShowAllPagesInArchive = true
-  ShowToc = true
-  UseHugoToc = true
-  disableSpecial1stPost = false
-  disableScrollToTop = false
-  comments = false
-  hidemeta = false
-  hideSummary = false
-  tocopen = false
+  images = []
 
-  [params.homeInfoParams]
-    Title = "mane-jun's log 👋"
-    Content = "개발 기록, 일상, 생각을 남기는 공간입니다. 게임개발, 리버싱, 시스템 등 기술적인 이야기부터 일상 회고, 읽은 것과 느낀 것까지 자유롭게 기록합니다."
+  [params.author]
+    name = "mane-jun"
+    email = ""
+    link = "https://github.com/mane-jun"
 
-  [[params.socialIcons]]
-    name = "github"
-    url = "https://github.com/mane-jun"
+  [params.header]
+    desktopMode = "fixed"
+    mobileMode = "auto"
+    [params.header.title]
+      logo = ""
+      name = "mane-jun's log"
+      pre = ""
+      post = ""
+      typeit = false
 
-  [[params.socialIcons]]
-    name = "rss"
-    url = "index.xml"
+  [params.footer]
+    enable = true
+    custom = ""
+    hugo = true
+    copyright = true
+    author = true
+    since = 2026
+    icp = ""
+    license = ""
 
-  [params.cover]
-    hidden = false
-    hiddenInList = false
-    hiddenInSingle = false
+  [params.section]
+    paginate = 10
+    dateFormat = "01-02"
+    rss = 10
 
-  [params.fuseOpts]
-    isCaseSensitive = false
-    shouldSort = true
-    location = 0
-    distance = 1000
-    threshold = 0.4
-    minMatchCharLength = 0
-    keys = ["title", "permalink", "summary", "content"]
+  [params.list]
+    paginate = 10
+    dateFormat = "01-02"
+    rss = 10
 
-[outputs]
-  home = ["HTML", "RSS", "JSON"]
+  [params.search]
+    enable = true
+    type = "fuse"
+    contentLength = 4000
+    placeholder = "검색어를 입력하세요..."
+    maxResultLength = 10
+    snippetLength = 30
+    highlightTag = "em"
+    absoluteURL = false
+    [params.search.fuse]
+      isCaseSensitive = false
+      minMatchCharLength = 2
+      findAllMatches = false
+      location = 0
+      threshold = 0.3
+      distance = 100
+      ignoreLocation = false
 
-[[menu.main]]
-  identifier = "posts"
-  name = "전체글"
-  url = "/posts/"
-  weight = 10
+  [params.home]
+    rss = 10
+    [params.home.profile]
+      enable = true
+      gravatarEmail = ""
+      avatarURL = ""
+      title = "mane-jun's log 👋"
+      subtitle = "개발 기록, 일상, 생각을 남기는 공간입니다."
+      typeit = true
+      social = true
+      disclaimer = ""
+    [params.home.posts]
+      enable = true
+      paginate = 6
 
-[[menu.main]]
-  identifier = "categories"
-  name = "카테고리"
-  url = "/categories/"
-  weight = 20
+  [params.social]
+    GitHub = "mane-jun"
+    RSS = true
 
-[[menu.main]]
-  identifier = "tags"
-  name = "태그"
-  url = "/tags/"
-  weight = 30
+  [params.page]
+    hiddenFromHomePage = false
+    hiddenFromSearch = false
+    twemoji = false
+    lightgallery = false
+    ruby = true
+    fraction = true
+    fontawesome = true
+    linkToMarkdown = true
+    rssFullText = false
+    [params.page.toc]
+      enable = true
+      keepStatic = false
+      auto = true
+    [params.page.code]
+      copy = true
+      maxShownLines = 50
+      [params.page.code.render]
+        goat = true
+        mermaid = true
+    [params.page.math]
+      enable = false
+    [params.page.share]
+      enable = false
+    [params.page.comment]
+      enable = false
+    [params.page.library]
+      [params.page.library.css]
+      [params.page.library.js]
+    [params.page.seo]
+      images = []
 
-[[menu.main]]
-  identifier = "search"
-  name = "검색"
-  url = "/search/"
-  weight = 40
+  [params.typeit]
+    speed = 100
+    cursorSpeed = 1000
+    cursorChar = "|"
+    duration = -1
 
-[[menu.main]]
-  identifier = "about"
-  name = "소개"
-  url = "/about/"
-  weight = 50
+  [params.seo]
+    image = ""
+    thumbnailUrl = ""
+
+  [params.analytics]
+    [params.analytics.google]
+      id = ""
+
+  [params.cookieconsent]
+    enable = false
+
+  [params.cdn]
+    data = ""
+
+  [params.compatibility]
+    polyfill = false
+    objectFit = false
 
 [markup]
   [markup.highlight]
+    anchorLineNos = false
     codeFences = true
-    guessSyntax = true
+    guessSyntax = false
     lineNos = false
-    noClasses = false
-    style = "monokai"
-  [markup.goldmark.renderer]
-    unsafe = true
+    lineNumbersInTable = true
+    noClasses = true
+  [markup.goldmark]
+    [markup.goldmark.extensions]
+      definitionList = true
+      footnote = true
+      linkify = true
+      strikethrough = true
+      table = true
+      taskList = true
+      typographer = true
+    [markup.goldmark.renderer]
+      unsafe = true
+  [markup.tableOfContents]
+    startLevel = 2
+    endLevel = 6
+
+[sitemap]
+  changefreq = "weekly"
+  filename = "sitemap.xml"
+  priority = 0.5
+
+[privacy]
+  [privacy.googleAnalytics]
+  [privacy.twitter]
+  [privacy.youtube]
+
+[mediaTypes]
+  [mediaTypes."text/plain"]
+    suffixes = ["md"]
+
+[outputFormats.MarkDown]
+  mediaType = "text/plain"
+  isPlainText = true
+  isHTML = false
+
+[outputs]
+  home = ["HTML", "RSS", "JSON"]
+  page = ["HTML"]
+  section = ["HTML", "RSS"]
+  taxonomy = ["HTML", "RSS"]
