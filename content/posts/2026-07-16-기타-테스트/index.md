@@ -8,3 +8,4 @@ summary: ""
 ---
 
 고작 몇킬로 걷지도 못하면서...
+![alt text](image.png)
