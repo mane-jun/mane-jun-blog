@@ -27,7 +27,7 @@ cd D:\Projects\mane-jun-blog
 
 ### 방법 2: 직접 파일 생성
 
-`content/posts/`에 `.md` 파일을 만들고 아래처럼 작성합니다.
+`content/posts/`에 `<슬러그>/index.md` 형태의 폴더를 만들고 아래처럼 작성합니다.
 
 ```yaml
 ---
@@ -43,7 +43,8 @@ summary: "목록에 보일 한 줄 요약"
 ```
 
 - `draft: false`여야 사이트에 노출됩니다. `draft: true`로 두면 비공개 초안으로 로컬에서만 보임(`hugo server -D`).
-- 파일명이 URL 슬러그가 됩니다 (예: `my-post.md` → `/posts/my-post/`).
+- 폴더명이 URL 슬러그가 됩니다 (예: `content/posts/my-post/index.md` → `/posts/my-post/`).
+- 이미지를 추가할 땐 같은 폴더 안에 넣고 `![설명](파일명.png)`처럼 상대경로로 참조하세요. 글과 이미지가 한 폴더에 묶여 있어야 글을 옮기거나 지울 때 이미지도 함께 따라갑니다.
 
 ## 카테고리 / 태그
 
@@ -82,7 +83,7 @@ mane-jun-blog/
 ├── archetypes/                    # hugo new content 시 기본 템플릿
 ├── content/
 │   ├── about.md                   # 소개 페이지
-│   └── posts/                     # 모든 글
+│   └── posts/                     # 모든 글 (글마다 <슬러그>/index.md + 이미지 폴더)
 ├── scripts/
 │   └── new-post.ps1               # 새 글 작성 도우미 스크립트
 ├── themes/LoveIt/                  # 테마 (git submodule)
