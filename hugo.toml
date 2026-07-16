@@ -1,0 +1,116 @@
+baseURL = "https://mane-jun.github.io/"
+locale = "ko-kr"
+defaultContentLanguage = "ko"
+title = "mane-jun's log"
+theme = "PaperMod"
+paginate = 10
+
+enableRobotsTXT = true
+enableEmojify = true
+hasCJKLanguage = true
+pygmentsUseClasses = true
+
+[pagination]
+  pagerSize = 10
+
+[minify]
+  disableXML = true
+
+[taxonomies]
+  category = "categories"
+  tag = "tags"
+
+[params]
+  env = "production"
+  title = "mane-jun's log"
+  description = "개발 기록, 일상, 생각을 남기는 공간"
+  keywords = ["Blog", "개발", "회고", "생각"]
+  author = "mane-jun"
+  defaultTheme = "dark"
+  disableThemeToggle = false
+  ShowShareButtons = false
+  ShowReadingTime = true
+  displayFullLangName = true
+  ShowPostNavLinks = true
+  ShowBreadCrumbs = true
+  ShowCodeCopyButtons = true
+  ShowWordCount = true
+  ShowRssButtonInSectionTermList = true
+  ShowAllPagesInArchive = true
+  ShowToc = true
+  UseHugoToc = true
+  disableSpecial1stPost = false
+  disableScrollToTop = false
+  comments = false
+  hidemeta = false
+  hideSummary = false
+  tocopen = false
+
+  [params.homeInfoParams]
+    Title = "mane-jun's log 👋"
+    Content = "개발 기록, 일상, 생각을 남기는 공간입니다. 게임개발, 리버싱, 시스템 등 기술적인 이야기부터 일상 회고, 읽은 것과 느낀 것까지 자유롭게 기록합니다."
+
+  [[params.socialIcons]]
+    name = "github"
+    url = "https://github.com/mane-jun"
+
+  [[params.socialIcons]]
+    name = "rss"
+    url = "index.xml"
+
+  [params.cover]
+    hidden = false
+    hiddenInList = false
+    hiddenInSingle = false
+
+  [params.fuseOpts]
+    isCaseSensitive = false
+    shouldSort = true
+    location = 0
+    distance = 1000
+    threshold = 0.4
+    minMatchCharLength = 0
+    keys = ["title", "permalink", "summary", "content"]
+
+[outputs]
+  home = ["HTML", "RSS", "JSON"]
+
+[[menu.main]]
+  identifier = "posts"
+  name = "전체글"
+  url = "/posts/"
+  weight = 10
+
+[[menu.main]]
+  identifier = "categories"
+  name = "카테고리"
+  url = "/categories/"
+  weight = 20
+
+[[menu.main]]
+  identifier = "tags"
+  name = "태그"
+  url = "/tags/"
+  weight = 30
+
+[[menu.main]]
+  identifier = "search"
+  name = "검색"
+  url = "/search/"
+  weight = 40
+
+[[menu.main]]
+  identifier = "about"
+  name = "소개"
+  url = "/about/"
+  weight = 50
+
+[markup]
+  [markup.highlight]
+    codeFences = true
+    guessSyntax = true
+    lineNos = false
+    noClasses = false
+    style = "monokai"
+  [markup.goldmark.renderer]
+    unsafe = true
