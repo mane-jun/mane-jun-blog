@@ -1,5 +1,5 @@
 ---
-title: "2026년 8월 회고"
+title: "2026/08 월간회고"
 date: 2026-09-06T21:00:00+09:00
 draft: false
 categories: ["회고"]
