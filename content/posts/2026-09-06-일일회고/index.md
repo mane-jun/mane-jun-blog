@@ -1,6 +1,6 @@
 ---
 title: 2026/09/06 일일회고
-date: 2026-09-05T23:00:00.000Z
+date: 2026-09-06T01:19:00.000Z
 draft: false
 categories:
     - 회고
