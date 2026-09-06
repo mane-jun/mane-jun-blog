@@ -1,11 +1,11 @@
 ---
-title: 2026/09/06 일일회고
+title: 2026/09/06 일간회고
 date: 2026-09-06T01:19:00.000Z
 draft: false
 categories:
     - 회고
 tags:
-    - 일일회고
+    - 일간회고
     - 일상
 summary: ""
 ---

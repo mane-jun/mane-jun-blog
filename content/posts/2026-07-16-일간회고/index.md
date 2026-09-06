@@ -1,5 +1,5 @@
 ---
-title: 2026/07/16 일일회고
+title: 2026/07/16 일간회고
 description: ""
 date: 2026-07-16T09:38:17.538Z
 preview: ""
