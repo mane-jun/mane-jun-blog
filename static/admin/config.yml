@@ -29,28 +29,113 @@ collections:
     media_folder: ""
     public_folder: ""
     # 목록 한 줄: "[게시됨] 제목 · 2026-09-21 · #태그1 #태그2 #태그3" (태그가 4개 이상이면 뒤에 …)
-    summary: "{{draft | ternary('[초안]', '[게시됨]')}} {{title}} · {{date | date('YYYY-MM-DD')}}{{fields.tags.0 | ternary(' · #', '')}}{{fields.tags.0}}{{fields.tags.1 | ternary(' #', '')}}{{fields.tags.1}}{{fields.tags.2 | ternary(' #', '')}}{{fields.tags.2}}{{fields.tags.3 | ternary(' …', '')}}"
-    sortable_fields:
+    summary: &list_summary "{{draft | ternary('[초안]', '[게시됨]')}} {{title}} · {{date | date('YYYY-MM-DD')}}{{fields.tags.0 | ternary(' · #', '')}}{{fields.tags.0}}{{fields.tags.1 | ternary(' #', '')}}{{fields.tags.1}}{{fields.tags.2 | ternary(' #', '')}}{{fields.tags.2}}{{fields.tags.3 | ternary(' …', '')}}"
+    sortable_fields: &sortable_fields
       - { field: date, default_sort: desc }
       - title
       - draft
-    view_filters:
+    view_filters: &view_filters
       - { label: 초안, field: draft, pattern: true }
       - { label: 공개, field: draft, pattern: false }
     fields:
-      - { label: 제목, name: title, widget: string }
-      - label: 작성일
+      - &title_field { label: 제목, name: title, widget: string }
+      - &date_field
+        label: 작성일
         name: date
         widget: datetime
         default: "{{now}}"
         format: "YYYY-MM-DDTHH:mm:ssZ"
-      - { label: 초안, name: draft, widget: boolean, default: true }
+      - &draft_field { label: 초안, name: draft, widget: boolean, default: true }
       - label: 카테고리
         name: categories
         widget: select
         multiple: true
-        options: [개발, 회고, 생각, 기타]
+        options: &category_options [개발, 회고, 생각, 기타]
         default: [기타]
       - { label: 태그, name: tags, widget: list, required: false }
-      - { label: 요약, name: summary, widget: text, required: false }
+      - &summary_field { label: 요약, name: summary, widget: text, required: false }
       - { label: 본문, name: body, widget: markdown }
+
+  # 회고 전용 컬렉션: 같은 글 폴더를 태그로 걸러 보여주고, 새 글을 양식으로 채운다.
+  # 본문 기본값은 저장소 루트의 일간회고_양식.md / 월간회고_양식.md 본문과 같아야 한다(tests/cms-config.test.js).
+  # 새 글 제목은 static/admin/retro-title.js가 채운다. 폴더명은 제목을 따른다(예: 2026-09-21-일간회고).
+  - name: daily
+    label: 일간회고
+    label_singular: 일간회고
+    folder: content/posts
+    create: true
+    path: "{{slug}}/index"
+    slug: "{{slug}}"
+    filter: { field: tags, value: 일간회고 }
+    media_folder: ""
+    public_folder: ""
+    summary: *list_summary
+    sortable_fields: *sortable_fields
+    view_filters: *view_filters
+    fields:
+      - *title_field
+      - *date_field
+      - *draft_field
+      - label: 카테고리
+        name: categories
+        widget: select
+        multiple: true
+        options: *category_options
+        default: [회고]
+      - { label: 태그, name: tags, widget: list, required: false, default: [일간회고, 일상] }
+      - *summary_field
+      - label: 본문
+        name: body
+        widget: markdown
+        default: |
+          ## **Facts (사실, 객관)**
+
+          ## **Feelings (느낌, 주관)**
+
+          ## **Bad (개선할 점)**
+
+          ## **Affirmation (자기 선언)**
+
+          ## **회고 작성법**
+
+          1. Facts(사실, 객관) 회사에서 실제로 내가 했던 일이나 겪었던 일의 사실을 적는다.
+          2. Feelings(느낌, 주관) 내가 했던 일을 하면서 느꼈던 감정이나 느낌을 적는다.
+          3. Findings(배운 점) 내가 했던 일을 통해서 새롭게 배운 점이나 알게 된 점을 적는다.
+          4. Affirmation (자기 선언) 내가 했던 일을 통해 배운 점과 아쉬운 점을 어떻게 유지 하고 개선할지를 적는다.
+
+  - name: monthly
+    label: 월간회고
+    label_singular: 월간회고
+    folder: content/posts
+    create: true
+    path: "{{slug}}/index"
+    slug: "{{slug}}"
+    filter: { field: tags, value: 월간회고 }
+    media_folder: ""
+    public_folder: ""
+    summary: *list_summary
+    sortable_fields: *sortable_fields
+    view_filters: *view_filters
+    fields:
+      - *title_field
+      - *date_field
+      - *draft_field
+      - label: 카테고리
+        name: categories
+        widget: select
+        multiple: true
+        options: *category_options
+        default: [회고]
+      - { label: 태그, name: tags, widget: list, required: false, default: [월간회고, 일상] }
+      - *summary_field
+      - label: 본문
+        name: body
+        widget: markdown
+        default: |
+          ## 이번 달 한 일
+
+          ## 잘한 점
+
+          ## 아쉬운 점
+
+          ## 다음 달 목표
