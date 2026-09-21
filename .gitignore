@@ -10,3 +10,8 @@ Thumbs.db
 *.swp
 
 .env
+
+/node_modules/
+/oauth-worker/.dev.vars*
+/oauth-worker/.env*
+/oauth-worker/.wrangler/
