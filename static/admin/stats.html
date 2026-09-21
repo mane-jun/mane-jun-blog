@@ -1,0 +1,238 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex, nofollow" />
+    <title>방문 통계 - mane-jun's log 관리자</title>
+    <style>
+      :root {
+        --bg: #f5f5f5;
+        --card: #fff;
+        --text: #1e2728;
+        --muted: #6b7280;
+        --line: #e5e7eb;
+        --bar: #2d96bd;
+        --bar-soft: #b9dfee;
+      }
+      @media (prefers-color-scheme: dark) {
+        :root {
+          --bg: #1c1d20;
+          --card: #292a2d;
+          --text: #e5e7eb;
+          --muted: #9ca3af;
+          --line: #3a3b3f;
+          --bar: #55bde2;
+          --bar-soft: #2c5566;
+        }
+      }
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--text);
+        font: 15px/1.5 system-ui, -apple-system, "Segoe UI", "Malgun Gothic", sans-serif;
+      }
+      main { max-width: 880px; margin: 0 auto; padding: 16px; }
+      a { color: var(--bar); }
+      header { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px; }
+      h1 { margin: 8px 0; font-size: 1.4rem; }
+      h2 { margin: 0 0 12px; font-size: 1rem; }
+      .links { display: flex; gap: 16px; font-size: .9rem; }
+      .ranges { display: flex; gap: 8px; margin: 12px 0; }
+      .ranges button {
+        padding: 6px 14px;
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        background: var(--card);
+        color: var(--text);
+        font: inherit;
+        cursor: pointer;
+      }
+      .ranges button[aria-pressed="true"] { border-color: var(--bar); background: var(--bar); color: #fff; }
+      .card { margin-bottom: 16px; padding: 16px; border-radius: 8px; background: var(--card); }
+      .totals { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+      .totals strong { display: block; font-size: 1.6rem; }
+      .totals span, .note, .empty { color: var(--muted); font-size: .85rem; }
+      .chart { display: flex; align-items: flex-end; gap: 3px; height: 160px; }
+      .chart .day { flex: 1; display: flex; flex-direction: column; justify-content: flex-end; height: 100%; }
+      .chart .bar { min-height: 2px; border-radius: 3px 3px 0 0; background: var(--bar); }
+      .axis { display: flex; justify-content: space-between; margin-top: 6px; color: var(--muted); font-size: .75rem; }
+      .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; }
+      .grid .card { margin: 0; }
+      ol { margin: 0; padding: 0; list-style: none; }
+      li { position: relative; display: flex; justify-content: space-between; gap: 12px; padding: 6px 8px; font-size: .9rem; }
+      li .fill { position: absolute; inset: 0 auto 0 0; border-radius: 4px; background: var(--bar-soft); z-index: 0; }
+      li span { position: relative; z-index: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+      li .count { flex: none; font-variant-numeric: tabular-nums; }
+      .message { padding: 24px 16px; border-radius: 8px; background: var(--card); text-align: center; }
+      [hidden] { display: none !important; }
+    </style>
+  </head>
+  <body>
+    <main>
+      <header>
+        <h1>방문 통계</h1>
+        <nav class="links">
+          <a href="./">← 관리자로</a>
+          <a href="https://dash.cloudflare.com/?to=/:account/web-analytics" target="_blank" rel="noopener noreferrer">Cloudflare에서 자세히 보기 ↗</a>
+        </nav>
+      </header>
+
+      <div class="ranges" role="group" aria-label="기간">
+        <button type="button" data-range="7d" aria-pressed="true">최근 7일</button>
+        <button type="button" data-range="30d" aria-pressed="false">최근 30일</button>
+      </div>
+
+      <p class="message" id="message">불러오는 중…</p>
+
+      <div id="report" hidden>
+        <section class="card totals">
+          <div><strong id="total-views">-</strong><span>조회수</span></div>
+          <div><strong id="total-visits">-</strong><span>방문 수</span></div>
+        </section>
+
+        <section class="card">
+          <h2>일자별 조회수</h2>
+          <div class="chart" id="chart"></div>
+          <div class="axis"><span id="axis-start"></span><span id="axis-end"></span></div>
+        </section>
+
+        <div class="grid">
+          <section class="card"><h2>많이 본 페이지</h2><ol id="pages"></ol></section>
+          <section class="card"><h2>유입 경로</h2><ol id="referers"></ol></section>
+          <section class="card"><h2>국가</h2><ol id="countries"></ol></section>
+        </div>
+
+        <p class="note">Cloudflare Web Analytics 기준이며, 표본 추출로 인해 근사치일 수 있습니다. 날짜는 UTC 기준이고, 결과는 최대 5분 동안 캐시됩니다.</p>
+      </div>
+    </main>
+
+    <script>
+      // static/admin/config.yml의 backend.base_url과 같아야 한다(tests/cms-config.test.js).
+      const STATS_ENDPOINT = 'https://mane-jun-blog-oauth.kimleo-study.workers.dev/stats';
+      const SITE_PREFIX = '/mane-jun-blog/';
+
+      const $ = (id) => document.getElementById(id);
+      const number = new Intl.NumberFormat('ko-KR');
+      const regionNames = (() => {
+        try { return new Intl.DisplayNames(['ko'], { type: 'region' }); } catch { return null; }
+      })();
+
+      const showMessage = (html) => {
+        $('message').innerHTML = html;
+        $('message').hidden = false;
+        $('report').hidden = true;
+      };
+
+      const githubToken = () => {
+        try {
+          return JSON.parse(localStorage.getItem('decap-cms-user'))?.token || null;
+        } catch {
+          return null;
+        }
+      };
+
+      // 검색 색인(/index.json)으로 글 경로를 제목으로 바꾼다. 실패하면 경로를 그대로 보여준다.
+      const titlesPromise = fetch(`${SITE_PREFIX}index.json`)
+        .then((response) => (response.ok ? response.json() : []))
+        .then((items) => new Map(items.map((item) => [decodeURI(item.uri), item.title])))
+        .catch(() => new Map());
+
+      const pageLabel = (path, titles) => {
+        let decoded = path;
+        try { decoded = decodeURI(path); } catch { /* keep the raw path */ }
+        if (decoded === SITE_PREFIX || decoded === SITE_PREFIX.slice(0, -1)) return '홈';
+        return titles.get(decoded) || titles.get(`${decoded}/`) || decoded.replace(SITE_PREFIX, '/');
+      };
+
+      const renderList = (id, rows, label) => {
+        const list = $(id);
+        list.replaceChildren();
+        if (!rows.length) {
+          const empty = document.createElement('li');
+          empty.className = 'empty';
+          empty.textContent = '아직 데이터가 없습니다.';
+          list.append(empty);
+          return;
+        }
+        const max = Math.max(...rows.map((row) => row.views));
+        for (const row of rows) {
+          const item = document.createElement('li');
+          const fill = document.createElement('i');
+          fill.className = 'fill';
+          fill.style.width = `${(row.views / max) * 100}%`;
+          const name = document.createElement('span');
+          name.textContent = label(row);
+          name.title = name.textContent;
+          const count = document.createElement('span');
+          count.className = 'count';
+          count.textContent = number.format(row.views);
+          item.append(fill, name, count);
+          list.append(item);
+        }
+      };
+
+      const render = (stats, titles) => {
+        $('total-views').textContent = number.format(stats.totals.views);
+        $('total-visits').textContent = number.format(stats.totals.visits);
+
+        const max = Math.max(1, ...stats.daily.map((day) => day.views));
+        const chart = $('chart');
+        chart.replaceChildren();
+        for (const day of stats.daily) {
+          const column = document.createElement('div');
+          column.className = 'day';
+          column.title = `${day.date} · 조회 ${number.format(day.views)} · 방문 ${number.format(day.visits)}`;
+          const bar = document.createElement('div');
+          bar.className = 'bar';
+          bar.style.height = `${(day.views / max) * 100}%`;
+          column.append(bar);
+          chart.append(column);
+        }
+        $('axis-start').textContent = stats.start;
+        $('axis-end').textContent = stats.end;
+
+        renderList('pages', stats.pages, (row) => pageLabel(row.path, titles));
+        renderList('referers', stats.referers, (row) => row.host);
+        renderList('countries', stats.countries, (row) => regionNames?.of(row.country) || row.country);
+
+        $('message').hidden = true;
+        $('report').hidden = false;
+      };
+
+      const load = async (range) => {
+        const token = githubToken();
+        if (!token) {
+          showMessage('관리자 페이지에서 먼저 GitHub로 로그인하세요.<br /><a href="./">관리자 페이지로 가기</a>');
+          return;
+        }
+        showMessage('불러오는 중…');
+        try {
+          const response = await fetch(`${STATS_ENDPOINT}?range=${range}`, { headers: { Authorization: `Bearer ${token}` } });
+          const body = await response.json().catch(() => ({}));
+          if (response.status === 401) {
+            showMessage('로그인이 만료되었습니다. 관리자 페이지에서 다시 로그인하세요.<br /><a href="./">관리자 페이지로 가기</a>');
+            return;
+          }
+          if (!response.ok) {
+            showMessage('');
+            $('message').textContent = body.error || '통계를 불러오지 못했습니다.';
+            return;
+          }
+          render(body, await titlesPromise);
+        } catch {
+          showMessage('통계 서버에 연결하지 못했습니다. 잠시 후 다시 시도하세요.');
+        }
+      };
+
+      document.querySelectorAll('[data-range]').forEach((button) => {
+        button.addEventListener('click', () => {
+          document.querySelectorAll('[data-range]').forEach((other) => other.setAttribute('aria-pressed', String(other === button)));
+          load(button.dataset.range);
+        });
+      });
+      load('7d');
+    </script>
+  </body>
+</html>

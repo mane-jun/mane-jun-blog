@@ -118,13 +118,16 @@ describe('Decap CMS configuration', () => {
     expect(html).toMatch(/<script type="module">\s*import \{ installRetroTitle \} from '\.\/retro-title\.js';\s*installRetroTitle\(\);\s*<\/script>/u);
   });
 
-  it('links the administrator to Cloudflare Web Analytics in a new tab', async () => {
+  it('links the administrator to the stats page, which calls the same Worker as the CMS', async () => {
     const html = await read('static/admin/index.html');
-    const link = html.match(/<a\b[^>]*id="analytics-link"[^>]*>/u)?.[0];
+    const stats = await read('static/admin/stats.html');
+    const config = parse(await read('static/admin/config.yml'));
+    const link = html.match(/<a [^>]*id="analytics-link"[^>]*>/u)?.[0];
 
     expect(link).toBeDefined();
-    expect(link).toContain('href="https://dash.cloudflare.com/?to=/:account/web-analytics"');
-    expect(link).toContain('target="_blank"');
-    expect(link).toContain('rel="noopener noreferrer"');
+    expect(link).toContain('href="stats.html"');
+    expect(stats).toContain(`const STATS_ENDPOINT = '${config.backend.base_url}/stats';`);
+    expect(stats).toContain('<meta name="robots" content="noindex, nofollow" />');
+    expect(stats).toContain("localStorage.getItem('decap-cms-user')");
   });
 });

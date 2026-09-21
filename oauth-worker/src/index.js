@@ -1,4 +1,5 @@
 import { createCallbackPage } from './callback-page.js';
+import { handleStats } from './stats.js';
 import { createState, verifyState } from './state.js';
 
 const githubAuthorizeUrl = 'https://github.com/login/oauth/authorize';
@@ -82,6 +83,8 @@ async function handleCallback(url, env) {
 
 export default {
   async fetch(request, env) {
+    // /stats has its own CORS preflight and bindings, so the OAuth flow keeps working even when stats are not configured.
+    if (new URL(request.url).pathname === '/stats') return handleStats(request, env);
     if (request.method !== 'GET') return text('Method not allowed.', 405, { Allow: 'GET' });
     if (requiredBindings.some((name) => !env[name])) return text('OAuth proxy is not configured.', 500);
 

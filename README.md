@@ -11,7 +11,7 @@
 | --- | --- | --- |
 | 블로그 + 관리자 페이지 | GitHub Pages | `main`에 push하면 GitHub Actions가 Hugo로 빌드해 배포 |
 | 관리자 (글쓰기) | [Decap CMS](https://decapcms.org/) (`static/admin/`) | 브라우저에서 글을 쓰면 `main`에 바로 커밋 |
-| 관리자 로그인 중계 | Cloudflare Worker (`oauth-worker/`) | GitHub 로그인 코드를 토큰으로 바꿔 전달만 함, 저장하는 것 없음 |
+| 관리자 로그인 중계 + 통계 | Cloudflare Worker (`oauth-worker/`) | GitHub 로그인 코드를 토큰으로 바꿔 전달만 함(저장하는 것 없음), 관리자 통계 페이지에 Cloudflare 통계 전달 |
 | 댓글 | [Giscus](https://giscus.app) | 이 저장소의 GitHub Discussions에 저장 |
 | 방문 통계 | Cloudflare Web Analytics | 방문자·조회수·유입 경로 |
 | 검색 | LoveIt 내장 (fuse.js) | 헤더의 검색 아이콘 |
@@ -151,7 +151,12 @@ tags: ["언리얼엔진", "리버싱"]
 
 ## 방문 통계
 
-관리자 글 목록 화면 오른쪽 아래의 **방문 통계 ↗** 버튼을 누르면 Cloudflare Web Analytics가 새 탭으로 열립니다(Cloudflare 로그인 필요). 날짜별 방문자, 글별 조회수, 유입 경로, 국가를 볼 수 있습니다. 관리자 화면 안에서 바로 보는 통계 페이지는 [후속 작업 설계](docs/superpowers/specs/2026-09-21-admin-analytics-page-design.md)에 정리되어 있습니다.
+관리자 글 목록 화면 오른쪽 아래의 **방문 통계** 버튼을 누르면 통계 페이지(`/admin/stats.html`)가 열립니다. Cloudflare에 로그인하지 않아도, 관리자 페이지에 GitHub로 로그인한 상태면 휴대폰에서도 볼 수 있습니다.
+
+- 최근 7일 / 30일의 조회수·방문 수, 일자별 조회수 막대, 많이 본 페이지(글 제목으로 표시), 유입 경로, 국가.
+- 값은 Cloudflare Web Analytics 기준 근사치이고, 날짜는 UTC 기준, 결과는 최대 5분 캐시됩니다.
+- 이 저장소에 쓰기 권한이 있는 GitHub 계정만 볼 수 있습니다. 더 자세한 분석은 페이지 위의 **Cloudflare에서 자세히 보기 ↗**로 봅니다.
+- 동작 방식: 통계 페이지가 관리자 로그인 토큰으로 로그인 Worker의 `/stats`를 부르고, Worker가 GitHub에서 쓰기 권한을 확인한 뒤 Cloudflare GraphQL API로 통계를 가져옵니다. Cloudflare API 토큰은 Worker 밖으로 나가지 않습니다. 코드는 [stats.js](oauth-worker/src/stats.js), [stats.html](static/admin/stats.html).
 
 ## 배포
 
@@ -193,7 +198,7 @@ mane-jun-blog/
 ├── content/
 │   ├── about.md                   # 소개 페이지
 │   └── posts/                     # 모든 글 (글마다 <슬러그>/index.md + 이미지)
-├── oauth-worker/                  # 관리자 GitHub 로그인용 Cloudflare Worker
+├── oauth-worker/                  # 관리자 GitHub 로그인·방문 통계용 Cloudflare Worker
 ├── scripts/new-post.ps1           # 새 글 작성 도우미 스크립트
 ├── static/admin/                  # 관리자 (Decap CMS) 페이지와 설정
 ├── tests/                         # CMS 설정·콘텐츠·비밀값 점검 테스트 (npm test)
@@ -275,6 +280,16 @@ backend:
 ```
 
 배포가 끝나면 관리자 페이지에서 GitHub 로그인이 동작합니다.
+
+### 방문 통계 (Cloudflare API 토큰)
+
+1. Cloudflare 대시보드 → 오른쪽 위 프로필 → **My Profile → API Tokens → Create Token → Custom token**. 권한은 **Account / Account Analytics / Read** 하나만 주고, Account Resources는 이 계정만 포함합니다.
+2. 발급된 토큰을 Worker 비밀값으로 넣습니다. 명령을 실행하면 값을 물어보니 거기에 붙여넣습니다(채팅이나 파일에 남기지 마세요).
+   ```powershell
+   npx wrangler secret put CF_API_TOKEN --config oauth-worker/wrangler.jsonc
+   ```
+3. [wrangler.jsonc](oauth-worker/wrangler.jsonc)의 `CF_SITE_TAG`에 Web Analytics 사이트 식별자를 넣습니다. 비콘 `token`과는 다른 값으로, 대시보드 Web Analytics에서 사이트를 눌렀을 때 주소창에 나옵니다. `CF_ACCOUNT_ID`는 `npx wrangler whoami`의 Account ID입니다.
+4. `npm run deploy:oauth`로 Worker를 배포합니다.
 
 ### 댓글 (Giscus)
 

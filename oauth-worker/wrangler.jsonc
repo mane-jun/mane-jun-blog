@@ -6,9 +6,12 @@
   "vars": {
     "ALLOWED_ORIGIN": "https://mane-jun.github.io",
     "ALLOWED_SITE_ID": "mane-jun.github.io",
-    "OAUTH_SCOPE": "public_repo"
+    "OAUTH_SCOPE": "public_repo",
+    "GITHUB_REPO": "mane-jun/mane-jun-blog",
+    "CF_ACCOUNT_ID": "86f392104768d78e18ff5beaf9fbfc90",
+    "CF_SITE_TAG": ""
   },
   "secrets": {
-    "required": ["GITHUB_OAUTH_ID", "GITHUB_OAUTH_SECRET", "OAUTH_STATE_SECRET"]
+    "required": ["GITHUB_OAUTH_ID", "GITHUB_OAUTH_SECRET", "OAUTH_STATE_SECRET", "CF_API_TOKEN"]
   }
 }
