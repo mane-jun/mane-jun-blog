@@ -28,8 +28,12 @@ collections:
     slug: "{{year}}-{{month}}-{{day}}-{{slug}}"
     media_folder: ""
     public_folder: ""
-    summary: "{{title}} — {{date}} — {{categories}} — draft={{draft}}"
-    sortable_fields: [date, title, draft]
+    # 목록 한 줄: "제목 · 2026-09-21 · #태그1 #태그2 #태그3" (태그가 4개 이상이면 뒤에 …)
+    summary: "{{title}} · {{date | date('YYYY-MM-DD')}}{{fields.tags.0 | ternary(' · #', '')}}{{fields.tags.0}}{{fields.tags.1 | ternary(' #', '')}}{{fields.tags.1}}{{fields.tags.2 | ternary(' #', '')}}{{fields.tags.2}}{{fields.tags.3 | ternary(' …', '')}}"
+    sortable_fields:
+      - { field: date, default_sort: desc }
+      - title
+      - draft
     view_filters:
       - { label: 초안, field: draft, pattern: true }
       - { label: 공개, field: draft, pattern: false }

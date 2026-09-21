@@ -31,8 +31,16 @@ describe('Decap CMS configuration', () => {
       slug: '{{year}}-{{month}}-{{day}}-{{slug}}',
       media_folder: '',
       public_folder: '',
-      summary: '{{title}} — {{date}} — {{categories}} — draft={{draft}}',
     });
+    // Decap has no list join filter, so tags are read by index and prefixed only when present.
+    expect(posts.summary).toBe(
+      "{{title}} · {{date | date('YYYY-MM-DD')}}"
+      + "{{fields.tags.0 | ternary(' · #', '')}}{{fields.tags.0}}"
+      + "{{fields.tags.1 | ternary(' #', '')}}{{fields.tags.1}}"
+      + "{{fields.tags.2 | ternary(' #', '')}}{{fields.tags.2}}"
+      + "{{fields.tags.3 | ternary(' …', '')}}",
+    );
+    expect(posts.sortable_fields).toContainEqual({ field: 'date', default_sort: 'desc' });
     expect(posts.fields.map(({ name }) => name)).toEqual([
       'title', 'date', 'draft', 'categories', 'tags', 'summary', 'body',
     ]);
