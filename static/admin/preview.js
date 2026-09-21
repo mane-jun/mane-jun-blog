@@ -34,4 +34,6 @@
   });
 
   ['posts', 'dev', 'daily', 'weekly', 'monthly'].forEach((name) => CMS.registerPreviewTemplate(name, PostPreview));
+  // File collections register previews by file name.
+  ['about'].forEach((name) => CMS.registerPreviewTemplate(name, PostPreview));
 })();

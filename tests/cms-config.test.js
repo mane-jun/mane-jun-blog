@@ -119,8 +119,23 @@ describe('Decap CMS configuration', () => {
 
     expect(html.indexOf('<script src="preview.js"></script>')).toBeGreaterThan(html.indexOf('decap-cms.js'));
     expect(preview).toContain("CMS.registerPreviewStyle(new URL('preview.css', location.href).href);");
-    const registered = JSON.parse(preview.match(/(\[[^\]]*\])\.forEach\(\(name\) => CMS\.registerPreviewTemplate/u)[1].replaceAll("'", '"'));
-    expect(registered).toEqual(config.collections.map(({ name }) => name));
+    // Folder collections register by collection name, file collections by file name.
+    const registered = [...preview.matchAll(/(\[[^\]]*\])\.forEach\(\(name\) => CMS\.registerPreviewTemplate/gu)]
+      .flatMap((match) => JSON.parse(match[1].replaceAll("'", '"')));
+    const expected = config.collections.flatMap((collection) => (collection.files
+      ? collection.files.map(({ name }) => name)
+      : [collection.name]));
+    expect(registered.sort()).toEqual(expected.sort());
+  });
+
+  it('lets the administrator edit the about page without dropping its front matter', async () => {
+    const config = parse(await read('static/admin/config.yml'));
+    const about = config.collections.find(({ name }) => name === 'pages').files.find(({ name }) => name === 'about');
+    const source = await read('content/about.md');
+    const frontMatterKeys = [...source.replace(/\r\n/gu, '\n').match(/^---\n([\s\S]*?)\n---/u)[1].matchAll(/^(\w+):/gmu)].map((match) => match[1]);
+
+    expect(about.file).toBe('content/about.md');
+    expect(about.fields.map(({ name }) => name)).toEqual([...frontMatterKeys, 'body']);
   });
 
   it('loads the retrospective title helper on the administrator page', async () => {
