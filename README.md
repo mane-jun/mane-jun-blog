@@ -28,6 +28,13 @@
 3. 글 목록에서 새 글 작성 또는 기존 글 수정, 본문 편집기에서 이미지 업로드
 4. **저장(Publish)** 을 누르면 `main` 브랜치에 바로 커밋되고 자동으로 배포됩니다 (1~2분).
 
+### 블로그에서 바로 가기
+
+이 브라우저에서 관리자에 로그인한 적이 있으면, 블로그 상단 메뉴(검색 아이콘 옆)에 **연필 아이콘**이 나타납니다. 글을 보는 중이면 **그 글의 편집 화면**으로, 다른 페이지에서는 관리자 첫 화면으로 갑니다. 모바일은 메뉴를 펼치면 "이 글 편집" / "관리자"로 보입니다.
+
+- 방문자에게는 보이지 않습니다. 관리자 로그인 정보가 브라우저에 있을 때만 나타나고, 관리자에서 로그아웃하면 사라집니다.
+- 새 기기에서는 아이콘이 없으니 [관리자 페이지](https://mane-jun.github.io/mane-jun-blog/admin/)에 한 번 로그인하세요.
+
 ### 공개와 초안
 
 - **새 글은 항상 초안(`draft: true`)으로 시작합니다.** 저장해도 사이트에는 안 보입니다. 공개하려면 편집 화면의 **초안** 스위치를 끄고 다시 저장하세요.
@@ -220,11 +227,12 @@ mane-jun-blog/
 | 파일 | 종류 | 하는 일 |
 | --- | --- | --- |
 | [layouts/posts/single.html](layouts/posts/single.html) | 테마 복사본 | 글 페이지에 시리즈 목록(본문 위)·이전/다음 편(본문 아래) 추가 |
-| [layouts/_partials/head/link.html](layouts/_partials/head/link.html) | 테마 복사본 | 아이콘 경로를 `/mane-jun-blog/` 하위로, 네이버 인증 태그, 댓글 반응 버그 수정 스크립트 포함 |
+| [layouts/_partials/head/link.html](layouts/_partials/head/link.html) | 테마 복사본 | 아이콘 경로를 `/mane-jun-blog/` 하위로, 네이버 인증 태그, 아래 두 스크립트 포함 |
 | [layouts/_partials/plugin/share.html](layouts/_partials/plugin/share.html) | 테마 복사본 | 공유 버튼에 "링크 복사" 추가 |
 | [layouts/_partials/plugin/analytics.html](layouts/_partials/plugin/analytics.html) | 대체 | Cloudflare Web Analytics 비콘만 사용 |
 | [layouts/robots.txt](layouts/robots.txt) | 대체 | 올바른 사이트맵 주소 |
 | [layouts/_partials/head/giscus-reactions-fix.html](layouts/_partials/head/giscus-reactions-fix.html) | 추가 | 테마가 다크/라이트 전환 때 댓글 반응(이모지) 버튼을 끄는 버그를 되돌림 |
+| [layouts/_partials/head/admin-link.html](layouts/_partials/head/admin-link.html) | 추가 | 관리자에 로그인한 브라우저에서만 헤더에 관리자·글 편집 바로가기 표시 |
 | [layouts/_partials/single/series.html](layouts/_partials/single/series.html), [series-nav.html](layouts/_partials/single/series-nav.html) | 추가 | 시리즈 목록, 이전/다음 편 |
 | [layouts/retro.html](layouts/retro.html) | 추가 | 회고 모아보기 페이지 |
 

@@ -1,0 +1,27 @@
+{{- /* 관리자 바로가기: 이 브라우저에서 관리자(Decap CMS)에 로그인한 적이 있을 때만 헤더에 연필 아이콘을 넣는다.
+     블로그와 관리자 페이지는 같은 출처라 Decap이 저장한 localStorage "decap-cms-user"를 읽을 수 있다.
+     글 페이지에서는 그 글의 편집 화면으로, 그 밖의 페이지에서는 관리자 첫 화면으로 간다. */ -}}
+{{- $admin := "admin/" | relURL -}}
+{{- $target := $admin -}}
+{{- $label := "관리자" -}}
+{{- if and .IsPage (eq .Section "posts") .File -}}
+    {{- $entry := replace .File.Path "\\" "/" | strings.TrimPrefix "posts/" | strings.TrimSuffix ".md" -}}
+    {{- $target = printf "%s#/collections/posts/entries/%s" $admin $entry -}}
+    {{- $label = "이 글 편집" -}}
+{{- end -}}
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        var user = null;
+        try { user = JSON.parse(localStorage.getItem('decap-cms-user')); } catch (e) { /* 저장소를 못 읽으면 표시하지 않음 */ }
+        if (!user || !user.token) return;
+        document.querySelectorAll('.theme-switch').forEach(function (themeSwitch) {
+            var link = document.createElement('a');
+            link.className = 'menu-item admin-link';
+            link.href = {{ $target }};
+            link.title = {{ $label }};
+            link.innerHTML = '<i class="fas fa-pencil-alt" aria-hidden="true"></i>';
+            if (themeSwitch.closest('#header-mobile')) link.append(' ' + {{ $label }});
+            themeSwitch.before(link);
+        });
+    });
+</script>

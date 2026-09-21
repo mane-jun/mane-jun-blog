@@ -1,6 +1,7 @@
 {{- /* 테마 link.html 복사본: 아이콘 경로를 relURL로 바꿔 /mane-jun-blog/ 하위에서도 찾게 하고, 없는 safari-pinned-tab.svg 링크는 뺌.
-     테마가 지원하지 않는 네이버 서치어드바이저 인증 태그와 Giscus 반응 버튼 버그 수정 스크립트도 여기서 넣음 */ -}}
+     테마가 지원하지 않는 네이버 서치어드바이저 인증 태그, Giscus 반응 버튼 버그 수정, 관리자 바로가기 스크립트도 여기서 넣음 */ -}}
 {{- partial "head/giscus-reactions-fix.html" . -}}
+{{- partial "head/admin-link.html" . -}}
 {{- with .Site.Params.verification.naver -}}
     <meta name="naver-site-verification" content="{{ . }}" />
 {{- end -}}
