@@ -1,0 +1,4 @@
+{{- /* Replaces themes/LoveIt/layouts/_partials/plugin/analytics.html: this site uses Cloudflare Web Analytics only. */ -}}
+{{- with site.Params.analytics.cloudflare.token -}}
+    <script type="module" src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token": "{{ . }}"}'></script>
+{{- end -}}

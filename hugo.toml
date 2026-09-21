@@ -187,9 +187,11 @@ enableEmoji = true
     image = ""
     thumbnailUrl = ""
 
+  # 방문 통계: Cloudflare Web Analytics (layouts/_partials/plugin/analytics.html에서 사용)
+  # 테마의 analytics 파셜을 대체하므로 테마 기본 통계 설정(google 등)은 동작하지 않음
   [params.analytics]
-    [params.analytics.google]
-      id = ""
+    [params.analytics.cloudflare]
+      token = "bc2ebe1bd0354d4dbf2758195472c27c"
 
   [params.cookieconsent]
     enable = false
