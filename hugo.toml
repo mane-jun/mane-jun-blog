@@ -82,6 +82,10 @@ enableEmoji = true
   description = "개발 기록, 일상, 생각을 남기는 공간"
   images = ["images/og.jpg"]
 
+  # 앱(홈 화면 설치) 상단 상태 표시줄 색: 다크 테마 헤더 색. 시작 화면 색은 static/site.webmanifest
+  [params.app]
+    themeColor = "#252627"
+
   [params.author]
     name = "mane-jun"
     email = ""

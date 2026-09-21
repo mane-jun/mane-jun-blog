@@ -184,7 +184,16 @@ comment: false                  # 선택: 이 글만 댓글 끄기
 - 글 아래에 X, Threads, Facebook, LinkedIn, **링크 복사** 버튼이 있습니다. 켜고 끄는 설정은 [hugo.toml](hugo.toml)의 `[params.page.share]`입니다.
 - 링크를 메신저나 SNS에 붙이면 개구리 썸네일([static/images/og.jpg](static/images/og.jpg))이 뜹니다. 글마다 다르게 하려면 글 폴더의 이미지를 front matter `images: ["파일명.png"]`로 지정하거나, 파일 이름을 `cover.png`처럼 `cover`/`feature`/`thumbnail`로 시작하게 둡니다.
 - 카카오톡·페이스북은 미리보기를 한동안 기억하므로 바뀐 썸네일이 바로 안 보일 수 있습니다. 카카오는 [공유 디버거](https://developers.kakao.com/tool/debugger/sharing)에서 캐시를 지울 수 있습니다.
-- 홈 화면의 프로필 사진은 [assets/images/avatar.jpg](assets/images/avatar.jpg), 브라우저 탭·홈 화면 아이콘은 `static/favicon*`, `static/apple-touch-icon.png`, `static/android-chrome-192x192.png`입니다.
+- 홈 화면의 프로필 사진은 [assets/images/avatar.jpg](assets/images/avatar.jpg), 브라우저 탭·홈 화면 아이콘은 `static/favicon*`, `static/apple-touch-icon.png`, `static/android-chrome-*.png`입니다.
+
+### 홈 화면 앱
+
+휴대폰 브라우저에서 "홈 화면에 추가"(안드로이드 Chrome은 "앱 설치")를 하면 앱처럼 쓸 수 있습니다. 설정은 [site.webmanifest](static/site.webmanifest)에 있습니다.
+
+- 앱을 켜면 블로그 홈(`/mane-jun-blog/`)에서 시작합니다.
+- 켜질 때 잠깐 보이는 시작 화면은 휴대폰이 앱 설정으로 자동으로 만드는 화면이라, 페이지 안의 로딩창으로는 바꿀 수 없습니다. 배경은 블로그 다크 테마 색(`#292a2d`)이고, 가운데에 개구리 아이콘(512px, 안드로이드가 모양에 맞춰 자르는 마스커블 아이콘 포함)이 나옵니다.
+- 상단 상태 표시줄은 헤더 색(`#252627`, [hugo.toml](hugo.toml)의 `[params.app] themeColor`)입니다.
+- 앱 설정을 바꾸면 **앱을 지우고 다시 설치**해야 시작 화면과 아이콘이 새로 반영됩니다.
 
 ## 운영
 
