@@ -3,7 +3,8 @@ import { createState, verifyState } from './state.js';
 
 const githubAuthorizeUrl = 'https://github.com/login/oauth/authorize';
 const githubTokenUrl = 'https://github.com/login/oauth/access_token';
-const callbackUrl = (requestUrl) => `${requestUrl.origin}/callback?provider=github`;
+// No query string, so it exactly matches the Redirect URL registered on the GitHub OAuth App.
+const callbackUrl = (requestUrl) => `${requestUrl.origin}/callback`;
 const randomNonce = () => {
   const bytes = new Uint8Array(16);
   crypto.getRandomValues(bytes);
@@ -62,7 +63,8 @@ async function exchangeCode(code, url, env) {
 async function handleCallback(url, env) {
   const code = url.searchParams.get('code');
   const stateToken = url.searchParams.get('state');
-  if (url.searchParams.get('provider') !== 'github') return text('Unsupported provider.', 400);
+  const provider = url.searchParams.get('provider');
+  if (provider !== null && provider !== 'github') return text('Unsupported provider.', 400);
   if (!code || !stateToken) return text('Missing OAuth code or state.', 400);
 
   let state;

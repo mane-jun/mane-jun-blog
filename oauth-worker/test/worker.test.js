@@ -57,7 +57,7 @@ describe('OAuth Worker', () => {
     expect(response.status).toBe(302);
     expect(location.origin).toBe('https://github.com');
     expect(location.searchParams.get('client_id')).toBe('client-id');
-    expect(location.searchParams.get('redirect_uri')).toBe('https://oauth.example/callback?provider=github');
+    expect(location.searchParams.get('redirect_uri')).toBe('https://oauth.example/callback');
     expect(location.searchParams.get('scope')).toBe('public_repo');
     expect(location.searchParams.get('state')).toContain('.');
   });
@@ -65,7 +65,7 @@ describe('OAuth Worker', () => {
   it('exchanges a valid callback and never exposes the client secret', async () => {
     const state = await issueState();
     const fetchMock = stubGitHub({ access_token: 'github-token' });
-    const response = await worker.fetch(new Request(`https://oauth.example/callback?provider=github&code=abc&state=${encodeURIComponent(state)}`), env);
+    const response = await worker.fetch(new Request(`https://oauth.example/callback?code=abc&state=${encodeURIComponent(state)}`), env);
     const html = await response.text();
     expect(response.status).toBe(200);
     expect(html).toContain('authorization:github:success:');
@@ -73,13 +73,15 @@ describe('OAuth Worker', () => {
     expect(html).not.toContain('client-secret');
     const [url, init] = fetchMock.mock.calls[0];
     expect(url).toBe('https://github.com/login/oauth/access_token');
-    expect(new URLSearchParams(init.body.toString()).get('code')).toBe('abc');
+    const exchange = new URLSearchParams(init.body.toString());
+    expect(exchange.get('code')).toBe('abc');
+    expect(exchange.get('redirect_uri')).toBe('https://oauth.example/callback');
   });
 
   it('maps GitHub errors to a generic Decap error page', async () => {
     const state = await issueState();
     stubGitHub({ error: 'bad_verification_code', error_description: 'The code passed is incorrect or expired.' });
-    const response = await worker.fetch(new Request(`https://oauth.example/callback?provider=github&code=abc&state=${encodeURIComponent(state)}`), env);
+    const response = await worker.fetch(new Request(`https://oauth.example/callback?code=abc&state=${encodeURIComponent(state)}`), env);
     const html = await response.text();
     expect(html).toContain('authorization:github:error:');
     expect(html).not.toContain('bad_verification_code');
@@ -87,9 +89,15 @@ describe('OAuth Worker', () => {
     expect(html).not.toMatch(/at .+\(.+:\d+:\d+\)/u);
   });
 
+  it('rejects callbacks for another provider', async () => {
+    const state = await issueState();
+    const response = await worker.fetch(new Request(`https://oauth.example/callback?provider=gitlab&code=abc&state=${encodeURIComponent(state)}`), env);
+    expect(response.status).toBe(400);
+  });
+
   it('rejects missing or invalid callback state', async () => {
-    const missing = await worker.fetch(new Request('https://oauth.example/callback?provider=github&code=abc'), env);
-    const invalid = await worker.fetch(new Request('https://oauth.example/callback?provider=github&code=abc&state=invalid'), env);
+    const missing = await worker.fetch(new Request('https://oauth.example/callback?code=abc'), env);
+    const invalid = await worker.fetch(new Request('https://oauth.example/callback?code=abc&state=invalid'), env);
     expect(missing.status).toBe(400);
     expect(invalid.status).toBe(400);
   });
@@ -97,7 +105,7 @@ describe('OAuth Worker', () => {
   it('rejects state issued for a different origin', async () => {
     const state = await issueState();
     const response = await worker.fetch(
-      new Request(`https://oauth.example/callback?provider=github&code=abc&state=${encodeURIComponent(state)}`),
+      new Request(`https://oauth.example/callback?code=abc&state=${encodeURIComponent(state)}`),
       { ...env, ALLOWED_ORIGIN: 'https://other.example' },
     );
     expect(response.status).toBe(403);
