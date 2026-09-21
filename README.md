@@ -15,6 +15,8 @@
 | 댓글 | [Giscus](https://giscus.app) | 이 저장소의 GitHub Discussions에 저장 |
 | 방문 통계 | Cloudflare Web Analytics | 방문자·조회수·유입 경로 |
 | 검색 | LoveIt 내장 (fuse.js) | 헤더의 검색 아이콘 |
+| 최상위 주소 (`mane-jun.github.io`) | [mane-jun.github.io 저장소](https://github.com/mane-jun/mane-jun.github.io) | 블로그로 이동, 네이버 소유 확인, 최상위 `robots.txt`(사이트맵 위치) |
+| 검색 노출 | Google Search Console, 네이버 서치어드바이저 | Google은 블로그 주소, 네이버는 호스트 단위만 받아서 `https://mane-jun.github.io`로 등록 |
 
 ## 웹 관리자에서 글 쓰기
 
