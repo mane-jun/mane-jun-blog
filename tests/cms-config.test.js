@@ -112,6 +112,17 @@ describe('Decap CMS configuration', () => {
     expect(field('body').default.trim()).toBe(await templateBody('개발글_양식.md'));
   });
 
+  it('registers a blog-like preview for every collection after loading the CMS', async () => {
+    const html = await read('static/admin/index.html');
+    const preview = await read('static/admin/preview.js');
+    const config = parse(await read('static/admin/config.yml'));
+
+    expect(html.indexOf('<script src="preview.js"></script>')).toBeGreaterThan(html.indexOf('decap-cms.js'));
+    expect(preview).toContain("CMS.registerPreviewStyle(new URL('preview.css', location.href).href);");
+    const registered = JSON.parse(preview.match(/(\[[^\]]*\])\.forEach\(\(name\) => CMS\.registerPreviewTemplate/u)[1].replaceAll("'", '"'));
+    expect(registered).toEqual(config.collections.map(({ name }) => name));
+  });
+
   it('loads the retrospective title helper on the administrator page', async () => {
     const html = await read('static/admin/index.html');
 

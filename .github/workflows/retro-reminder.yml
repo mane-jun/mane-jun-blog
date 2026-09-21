@@ -1,0 +1,97 @@
+name: Daily retrospective reminder
+
+# 매일 22:00 KST에 오늘 일간회고가 없거나 초안이면 이슈를 만들어 mane-jun에게 지정한다(GitHub 앱 푸시 알림).
+# 회고를 공개해 push하면 그날 알림 이슈를 닫는다. 수동 실행 때 date를 주면 그 날짜로 확인한다(테스트용).
+on:
+  schedule:
+    - cron: "0 13 * * *"
+  push:
+    branches:
+      - main
+    paths:
+      - "content/posts/**"
+  workflow_dispatch:
+    inputs:
+      date:
+        description: "확인할 날짜 (YYYY-MM-DD, 비우면 오늘 KST)"
+        required: false
+
+permissions:
+  contents: read
+  issues: write
+
+concurrency:
+  group: retro-reminder
+  cancel-in-progress: false
+
+env:
+  LABEL: 회고 알림
+  ASSIGNEE: mane-jun
+  ADMIN_URL: https://mane-jun.github.io/mane-jun-blog/admin/
+  GH_TOKEN: ${{ github.token }}
+  GH_REPO: ${{ github.repository }}
+
+jobs:
+  remind:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Check today's daily retrospective
+        id: check
+        env:
+          RETRO_DATE: ${{ github.event.inputs.date }}
+        run: node scripts/retro-reminder.mjs
+
+      - name: Close the reminder once the retrospective is published
+        if: steps.check.outputs.status == 'published'
+        env:
+          DATE: ${{ steps.check.outputs.date }}
+        run: |
+          gh issue list --label "$LABEL" --state open --json number,title \
+            --jq ".[] | select(.title | contains(\"$DATE\")) | .number" |
+          while read -r number; do
+            gh issue close "$number" --comment "$DATE 일간회고를 공개했습니다. 👍"
+          done
+
+      - name: Remind
+        if: github.event_name != 'push' && steps.check.outputs.status != 'published'
+        env:
+          DATE: ${{ steps.check.outputs.date }}
+          STATUS: ${{ steps.check.outputs.status }}
+          ENTRY: ${{ steps.check.outputs.entry }}
+        run: |
+          gh label create "$LABEL" --color FBCA04 --description "일간회고 알림" --force
+
+          # 지난 날짜의 알림은 닫고, 오늘 알림이 이미 있으면 새로 만들지 않는다.
+          existing=""
+          while IFS=$'\t' read -r number title; do
+            [ -z "$number" ] && continue
+            if [[ "$title" == *"$DATE"* ]]; then
+              existing="$number"
+            else
+              gh issue close "$number" --reason "not planned" --comment "지난 날짜의 알림이라 닫습니다."
+            fi
+          done < <(gh issue list --label "$LABEL" --state open --json number,title --jq '.[] | "\(.number)\t\(.title)"')
+          if [ -n "$existing" ]; then
+            echo "Reminder #$existing already open for $DATE"
+            exit 0
+          fi
+
+          if [ "$STATUS" = "draft" ]; then
+            title="📝 $DATE 일간회고가 아직 초안이에요"
+            body="$DATE 일간회고가 초안으로만 저장되어 사이트에 보이지 않습니다. 편집 화면에서 **초안** 스위치를 끄고 저장하세요.
+
+          - [이 회고 편집하기](${ADMIN_URL}#/collections/posts/entries/${ENTRY})
+
+          공개하면 이 알림은 자동으로 닫힙니다."
+          else
+            title="📝 $DATE 일간회고를 아직 안 썼어요"
+            body="오늘 일간회고가 아직 없습니다. 바쁘면 **오늘 체크(컨디션·운동)와 오늘 한 줄만** 써도 됩니다.
+
+          - [일간회고 쓰기](${ADMIN_URL}#/collections/daily/new)
+
+          회고를 공개하면 이 알림은 자동으로 닫힙니다."
+          fi
+          gh issue create --title "$title" --body "$body" --label "$LABEL" --assignee "$ASSIGNEE"

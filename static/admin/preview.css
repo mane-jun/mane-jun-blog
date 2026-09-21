@@ -1,0 +1,147 @@
+/* Decap CMS 미리보기(static/admin/preview.js)를 블로그 글(LoveIt 라이트 테마)처럼 보이게 하는 스타일 */
+html {
+  background: #fff;
+}
+
+body {
+  margin: 0;
+  color: #161209;
+  font: 16px/1.8 system-ui, -apple-system, "Segoe UI", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+  word-break: keep-all;
+  overflow-wrap: break-word;
+}
+
+.post {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 1.5rem 1.25rem 3rem;
+}
+
+a {
+  color: #2d96bd;
+  text-decoration: none;
+}
+
+.draft {
+  display: inline-block;
+  margin: 0 0 .5rem;
+  padding: .15rem .6rem;
+  border-radius: 999px;
+  background: #fff3cd;
+  color: #7a5b00;
+  font-size: .8rem;
+}
+
+.title {
+  margin: .5rem 0;
+  font-size: 1.6rem;
+  line-height: 1.4;
+}
+
+.meta,
+.summary {
+  margin: 0 0 .75rem;
+  color: #a9a9b3;
+  font-size: .875rem;
+}
+
+.summary {
+  color: #666;
+}
+
+.series {
+  margin: 1rem 0;
+  padding: .6rem 1rem;
+  border-left: 4px solid #2d96bd;
+  border-radius: 4px;
+  background: #f5f5f5;
+  font-weight: bold;
+  font-size: .95rem;
+}
+
+.content h1,
+.content h2,
+.content h3,
+.content h4 {
+  margin: 1.8rem 0 .8rem;
+  line-height: 1.4;
+}
+
+.content h2 { font-size: 1.5rem; }
+.content h3 { font-size: 1.3rem; }
+.content h4 { font-size: 1.15rem; }
+
+/* LoveIt은 본문 제목 앞에 # 표시를 붙인다 */
+.content h2::before,
+.content h3::before,
+.content h4::before {
+  content: "#";
+  margin-right: .3rem;
+  color: #2d96bd;
+}
+
+.content p,
+.content ul,
+.content ol {
+  margin: .5rem 0;
+}
+
+.content li > p {
+  margin: 0;
+}
+
+.content img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  margin: 1rem auto;
+}
+
+.content blockquote {
+  margin: 1rem 0;
+  padding: .5rem 1rem;
+  border-left: .25rem solid #2d96bd;
+  background: rgba(45, 150, 189, .1);
+}
+
+.content code {
+  padding: .1rem .35rem;
+  border-radius: 3px;
+  background: #f5f5f5;
+  color: #e74c3c;
+  font: .9em/1.6 ui-monospace, "Cascadia Code", Consolas, monospace;
+}
+
+.content pre {
+  overflow-x: auto;
+  padding: .75rem 1rem;
+  border-radius: 4px;
+  background: #f5f5f5;
+}
+
+.content pre code {
+  padding: 0;
+  color: #161209;
+}
+
+.content table {
+  width: 100%;
+  margin: 1rem 0;
+  border-collapse: collapse;
+}
+
+.content th,
+.content td {
+  padding: .4rem .6rem;
+  border: 1px solid #dcdcdc;
+}
+
+.content th {
+  background: #ededed;
+}
+
+.content hr {
+  margin: 1.5rem 0;
+  border: 0;
+  border-top: 1px dashed #dcdcdc;
+}
