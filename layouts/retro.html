@@ -1,0 +1,141 @@
+{{- /* 회고 모아보기 (/retro/): 일간회고 잔디 + 숫자 + 주간·월간회고 목록.
+     날짜는 제목(2026/09/21 일간회고)에서, 컨디션·운동은 본문(컨디션: 3/5, 운동: O)에서 읽는다.
+     "오늘" 기준 계산(연속 기록, 이번 달)은 빌드 시점이 아니라 보는 사람의 한국 시간으로 하도록 JS에서 한다. */ -}}
+{{- define "title" }}{{ .Title }} - {{ .Site.Title }}{{ end -}}
+
+{{- define "content" -}}
+    {{- $posts := where site.RegularPages "Section" "posts" -}}
+    {{- $daily := where $posts "Params.tags" "intersect" (slice "일간회고") -}}
+    {{- $weekly := where $posts "Params.tags" "intersect" (slice "주간회고") -}}
+    {{- $monthly := where $posts "Params.tags" "intersect" (slice "월간회고") -}}
+
+    {{- $entries := slice -}}
+    {{- range $daily -}}
+        {{- $date := .Date.Format "2006-01-02" -}}
+        {{- with findRESubmatch `^(\d{4})/(\d{2})/(\d{2})` .Title 1 -}}
+            {{- $m := index . 0 -}}
+            {{- $date = printf "%s-%s-%s" (index $m 1) (index $m 2) (index $m 3) -}}
+        {{- end -}}
+        {{- $condition := 0 -}}
+        {{- with findRESubmatch `컨디션\s*:\s*\**\s*([1-5])\s*/\s*5` .RawContent 1 -}}
+            {{- $condition = index (index . 0) 1 | int -}}
+        {{- end -}}
+        {{- $exercise := "" -}}
+        {{- with findRESubmatch `운동\s*:\s*\**\s*([OoXx○×])` .RawContent 1 -}}
+            {{- $exercise = cond (in (slice "O" "o" "○") (index (index . 0) 1)) "O" "X" -}}
+        {{- end -}}
+        {{- $entries = $entries | append (dict "date" $date "url" .RelPermalink "title" .Title "condition" $condition "exercise" $exercise) -}}
+    {{- end -}}
+
+    <div class="page single retro-page">
+        <h1 class="single-title">{{ .Title }}</h1>
+
+        <section class="retro-stats" id="retro-stats" aria-label="회고 숫자">
+            <div><strong data-stat="streak">-</strong><span>연속 기록</span></div>
+            <div><strong data-stat="month">-</strong><span>이번 달 쓴 날</span></div>
+            <div><strong data-stat="condition">-</strong><span>이번 달 평균 컨디션</span></div>
+            <div><strong>{{ len $daily }} · {{ len $weekly }} · {{ len $monthly }}</strong><span>일간 · 주간 · 월간</span></div>
+        </section>
+
+        <section class="retro-grass-section" aria-label="일간회고 잔디">
+            <h2>일간회고</h2>
+            <div class="retro-grass-scroll" id="retro-grass-scroll">
+                <div class="retro-grass" id="retro-grass" role="grid"></div>
+            </div>
+            <div class="retro-legend">
+                <span>컨디션</span>
+                <i class="level-0" title="회고 없음"></i>
+                <i class="level-1" title="1/5"></i>
+                <i class="level-2" title="2/5"></i>
+                <i class="level-3" title="3/5"></i>
+                <i class="level-4" title="4/5"></i>
+                <i class="level-5" title="5/5"></i>
+                <span>좋음</span>
+                <span class="retro-legend-note">컨디션을 안 적은 날은 중간 색</span>
+            </div>
+            <noscript><p>잔디를 보려면 JavaScript가 필요합니다.</p></noscript>
+        </section>
+
+        <div class="retro-lists">
+            {{- range slice (dict "title" "주간회고" "pages" $weekly) (dict "title" "월간회고" "pages" $monthly) -}}
+                <section>
+                    <h2>{{ .title }}</h2>
+                    {{- with .pages -}}
+                        <ul>
+                            {{- range .ByDate.Reverse -}}
+                                <li><a href="{{ .RelPermalink }}">{{ .Title }}</a></li>
+                            {{- end -}}
+                        </ul>
+                    {{- else -}}
+                        <p class="retro-empty">아직 없습니다.</p>
+                    {{- end -}}
+                </section>
+            {{- end -}}
+        </div>
+    </div>
+
+    <script id="retro-data" type="application/json">{{ $entries | jsonify | safeJS }}</script>
+    <script>
+    (function () {
+        var entries = JSON.parse(document.getElementById('retro-data').textContent);
+        var byDate = {};
+        entries.forEach(function (e) { byDate[e.date] = e; });
+
+        var DAY = 86400000;
+        var pad = function (n) { return String(n).padStart(2, '0'); };
+        var key = function (d) { return d.getUTCFullYear() + '-' + pad(d.getUTCMonth() + 1) + '-' + pad(d.getUTCDate()); };
+        // 한국 시간 기준 오늘 (UTC 필드로 다룬다)
+        var now = new Date(Date.now() + 9 * 3600000);
+        var today = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()));
+
+        // 연속 기록: 오늘 썼으면 오늘부터, 아니면 어제부터 거꾸로 센다.
+        var streak = 0;
+        var d = byDate[key(today)] ? today : new Date(today.getTime() - DAY);
+        while (byDate[key(d)]) { streak++; d = new Date(d.getTime() - DAY); }
+
+        var monthPrefix = key(today).slice(0, 7);
+        var monthEntries = entries.filter(function (e) { return e.date.slice(0, 7) === monthPrefix && e.date <= key(today); });
+        var rated = monthEntries.filter(function (e) { return e.condition > 0; });
+        var set = function (name, text) { document.querySelector('[data-stat="' + name + '"]').textContent = text; };
+        set('streak', streak + '일');
+        set('month', monthEntries.length + ' / ' + today.getUTCDate() + '일');
+        set('condition', rated.length ? (rated.reduce(function (s, e) { return s + e.condition; }, 0) / rated.length).toFixed(1) + ' / 5' : '-');
+
+        // 잔디: 월요일 시작 주 53개, 이번 주가 오른쪽 끝
+        var grass = document.getElementById('retro-grass');
+        var weekday = (today.getUTCDay() + 6) % 7; // 월=0 … 일=6
+        var start = new Date(today.getTime() - (52 * 7 + weekday) * DAY);
+        var lastMonth = -1;
+        for (var w = 0; w < 53; w++) {
+            var col = document.createElement('div');
+            col.className = 'retro-week';
+            var first = new Date(start.getTime() + w * 7 * DAY);
+            var label = document.createElement('span');
+            label.className = 'retro-month';
+            if (first.getUTCMonth() !== lastMonth) { label.textContent = (first.getUTCMonth() + 1) + '월'; lastMonth = first.getUTCMonth(); }
+            col.appendChild(label);
+            for (var i = 0; i < 7; i++) {
+                var day = new Date(first.getTime() + i * DAY);
+                var k = key(day);
+                var e = byDate[k];
+                var cell = document.createElement(e ? 'a' : 'span');
+                cell.className = 'retro-day';
+                if (day > today) {
+                    cell.classList.add('future');
+                } else if (e) {
+                    cell.href = e.url;
+                    cell.classList.add('level-' + (e.condition || 3));
+                    cell.title = k + ' · 컨디션 ' + (e.condition ? e.condition + '/5' : '미기록') + (e.exercise ? ' · 운동 ' + e.exercise : '');
+                } else {
+                    cell.classList.add('level-0');
+                    cell.title = k;
+                }
+                col.appendChild(cell);
+            }
+            grass.appendChild(col);
+        }
+        var scroller = document.getElementById('retro-grass-scroll');
+        scroller.scrollLeft = scroller.scrollWidth;
+    })();
+    </script>
+{{- end -}}

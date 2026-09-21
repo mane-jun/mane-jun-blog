@@ -70,3 +70,135 @@
     text-align: right;
   }
 }
+
+// 회고 모아보기 (layouts/retro.html)
+$retro-levels: (0: #ebedf0, 1: #c6e48b, 2: #9be077, 3: #6cc644, 4: #40a02b, 5: #216e39);
+$retro-levels-dark: (0: #2f3136, 1: #1f4d2b, 2: #26683a, 3: #2e8b47, 4: #3fb25d, 5: #5fd37a);
+
+.retro-page {
+  h2 {
+    margin: 2rem 0 .75rem;
+    font-size: 1.2rem;
+  }
+
+  .retro-stats {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: .75rem;
+    margin-top: 1.5rem;
+
+    @media (max-width: 680px) {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    div {
+      padding: .75rem;
+      border-radius: 6px;
+      background-color: $code-background-color;
+      text-align: center;
+
+      [theme=dark] & {
+        background-color: $code-background-color-dark;
+      }
+    }
+
+    strong {
+      display: block;
+      font-size: 1.3rem;
+    }
+
+    span {
+      font-size: .8rem;
+      color: $global-font-secondary-color;
+
+      [theme=dark] & {
+        color: $global-font-secondary-color-dark;
+      }
+    }
+  }
+
+  .retro-grass-scroll {
+    overflow-x: auto;
+    padding-bottom: .25rem;
+  }
+
+  .retro-grass {
+    display: flex;
+    gap: 2px;
+    width: max-content;
+  }
+
+  .retro-week {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  // 폭 0으로 두어 "10월" 같은 글자가 주 칸 폭을 넓히지 않게 한다
+  .retro-month {
+    width: 0;
+    height: 1rem;
+    font-size: .7rem;
+    line-height: 1rem;
+    white-space: nowrap;
+    color: $global-font-secondary-color;
+  }
+
+  .retro-day,
+  .retro-legend i {
+    display: block;
+    width: 10px;
+    height: 10px;
+    border-radius: 2px;
+  }
+
+  .retro-day.future {
+    visibility: hidden;
+  }
+
+  @each $level, $color in $retro-levels {
+    .level-#{$level} {
+      background-color: $color;
+
+      [theme=dark] & {
+        background-color: map-get($retro-levels-dark, $level);
+      }
+    }
+  }
+
+  .retro-legend {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 3px;
+    margin-top: .5rem;
+    font-size: .75rem;
+    color: $global-font-secondary-color;
+
+    span {
+      margin: 0 .25rem;
+    }
+
+    .retro-legend-note {
+      margin-left: 1rem;
+    }
+  }
+
+  .retro-lists {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+
+    @media (max-width: 680px) {
+      grid-template-columns: 1fr;
+    }
+
+    ul {
+      padding-left: 1.25rem;
+    }
+
+    .retro-empty {
+      color: $global-font-secondary-color;
+    }
+  }
+}

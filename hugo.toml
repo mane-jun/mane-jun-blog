@@ -50,6 +50,14 @@ enableEmoji = true
     title = ""
   [[menu.main]]
     weight = 4
+    identifier = "retro"
+    pre = ""
+    post = ""
+    name = "회고"
+    url = "/retro/"
+    title = "회고 모아보기"
+  [[menu.main]]
+    weight = 5
     identifier = "about"
     pre = ""
     post = ""
@@ -57,7 +65,7 @@ enableEmoji = true
     url = "/about/"
     title = ""
   [[menu.main]]
-    weight = 5
+    weight = 6
     identifier = "github"
     pre = "<i class='fab fa-github' aria-hidden='true'></i>"
     post = ""
