@@ -56,6 +56,7 @@ describe('Decap CMS configuration', () => {
 
   it.each([
     ['daily', '일간회고', '일간회고_양식.md'],
+    ['weekly', '주간회고', '주간회고_양식.md'],
     ['monthly', '월간회고', '월간회고_양식.md'],
   ])('offers a %s retrospective collection prefilled from its template', async (name, tag, templatePath) => {
     const config = parse(await read('static/admin/config.yml'));
