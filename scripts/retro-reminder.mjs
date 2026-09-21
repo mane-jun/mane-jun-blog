@@ -6,6 +6,12 @@ import { fileURLToPath } from 'node:url';
 
 const KST_OFFSET_MS = 9 * 60 * 60 * 1000;
 
+// Accepts YYYY-MM-DD or YYYYMMDD (typed in the manual "Run workflow" form); returns YYYY-MM-DD or null.
+export const normalizeDate = (value) => {
+  const match = /^(\d{4})-?(\d{2})-?(\d{2})$/u.exec(String(value).trim());
+  return match ? `${match[1]}-${match[2]}-${match[3]}` : null;
+};
+
 // YYYY-MM-DD in KST.
 export const kstDate = (now = new Date()) => new Date(now.getTime() + KST_OFFSET_MS).toISOString().slice(0, 10);
 
@@ -34,7 +40,11 @@ export function checkDailyRetro(postsDir, date) {
 }
 
 if (process.argv[1] === fileURLToPath(import.meta.url)) {
-  const date = process.env.RETRO_DATE || kstDate();
+  const date = process.env.RETRO_DATE ? normalizeDate(process.env.RETRO_DATE) : kstDate();
+  if (!date) {
+    console.error(`Invalid date: ${process.env.RETRO_DATE} (use YYYY-MM-DD)`);
+    process.exit(1);
+  }
   const result = checkDailyRetro(fileURLToPath(new URL('../content/posts/', import.meta.url)), date);
   console.log(JSON.stringify(result));
   if (process.env.GITHUB_OUTPUT) {

@@ -2,7 +2,7 @@ import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { afterEach, describe, expect, it } from 'vitest';
-import { checkDailyRetro, kstDate } from '../scripts/retro-reminder.mjs';
+import { checkDailyRetro, kstDate, normalizeDate } from '../scripts/retro-reminder.mjs';
 
 let postsDir;
 const writePost = (folder, frontMatter) => {
@@ -17,6 +17,14 @@ describe('daily retrospective reminder', () => {
     postsDir = mkdtempSync(join(tmpdir(), 'retro-'));
     expect(kstDate(new Date('2026-09-21T13:00:00Z'))).toBe('2026-09-21');
     expect(kstDate(new Date('2026-09-21T15:30:00Z'))).toBe('2026-09-22');
+  });
+
+  it('accepts a manual date with or without hyphens and rejects anything else', () => {
+    postsDir = mkdtempSync(join(tmpdir(), 'retro-'));
+    expect(normalizeDate('2026-09-20')).toBe('2026-09-20');
+    expect(normalizeDate(' 20260920 ')).toBe('2026-09-20');
+    expect(normalizeDate('2026/09/20')).toBeNull();
+    expect(normalizeDate('어제')).toBeNull();
   });
 
   it('reports a missing, draft or published retrospective', () => {
