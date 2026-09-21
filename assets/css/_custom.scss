@@ -1,0 +1,72 @@
+// 테마 _custom.scss를 대체한다. 테마 변수(themes/LoveIt/assets/css/_variables.scss)를 그대로 쓴다.
+
+// 시리즈 목록 (layouts/_partials/single/series.html)
+.series-box {
+  margin: 1.5rem 0;
+  padding: .75rem 1rem;
+  border-left: 4px solid $single-link-color;
+  border-radius: 4px;
+  background-color: $code-background-color;
+  font-size: .95rem;
+
+  [theme=dark] & {
+    border-left-color: $single-link-color-dark;
+    background-color: $code-background-color-dark;
+  }
+
+  .series-heading {
+    font-weight: bold;
+
+    .series-count {
+      margin-left: .5rem;
+      font-weight: normal;
+      color: $global-font-secondary-color;
+
+      [theme=dark] & {
+        color: $global-font-secondary-color-dark;
+      }
+    }
+  }
+
+  .series-list {
+    margin: .5rem 0 0;
+    padding-left: 1.5rem;
+  }
+
+  .series-current {
+    font-weight: bold;
+  }
+}
+
+// 시리즈 이전/다음 편 (layouts/_partials/single/series-nav.html)
+.series-nav {
+  display: flex;
+  gap: 1rem;
+  margin: 2rem 0 1rem;
+
+  a {
+    flex: 1;
+    padding: .75rem 1rem;
+    border: 1px solid $global-border-color;
+    border-radius: 4px;
+
+    [theme=dark] & {
+      border-color: $global-border-color-dark;
+    }
+
+    span {
+      display: block;
+      font-size: .8rem;
+      color: $global-font-secondary-color;
+
+      [theme=dark] & {
+        color: $global-font-secondary-color-dark;
+      }
+    }
+  }
+
+  .series-next {
+    margin-left: auto;
+    text-align: right;
+  }
+}

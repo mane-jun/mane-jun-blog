@@ -105,6 +105,19 @@ summary: "목록에 보일 한 줄 요약"
 - 링크를 공유할 때 보이는 썸네일은 기본으로 개구리 이미지(`static/images/og.jpg`)입니다. 글마다 따로 쓰려면 글 폴더의 이미지를 front matter에 `images: ["파일명.png"]`로 지정하거나, 파일 이름을 `cover.png`처럼 `cover`/`feature`/`thumbnail`로 시작하게 두면 됩니다.
 - 기존 글의 내용·카테고리·태그는 해당 `index.md`를 직접 고치면 다음 배포 때 반영됩니다.
 
+### 시리즈
+
+이어지는 글(예: 리버싱 입문 1편, 2편, …)은 front matter의 `series`에 같은 이름을 쓰면 묶입니다. 웹 관리자에서는 일반 글·개발글 편집 화면의 **시리즈** 칸에 쓰면 됩니다(회고에는 칸이 없습니다).
+
+```yaml
+series: "리버싱 입문"
+```
+
+- 글 본문 위에 시리즈 이름, 몇 번째 편인지(`2 / 3`), 전체 편 목록이 나오고, 본문 아래에 이전 편·다음 편 링크가 나옵니다.
+- 편 순서는 **작성일 순**입니다. 순서를 바꾸려면 작성일을 조정하세요. 초안은 목록에 나오지 않습니다.
+- 모든 시리즈는 `/series/` 페이지에서 볼 수 있습니다. 첫 시리즈를 쓰면 `hugo.toml`의 메뉴에 "시리즈"를 추가하면 좋습니다.
+- 관련 파일: [series.html](layouts/_partials/single/series.html)(편 목록), [series-nav.html](layouts/_partials/single/series-nav.html)(이전/다음 편), [_custom.scss](assets/css/_custom.scss)(모양). 글 페이지 레이아웃은 테마의 `posts/single.html`을 복사해 [layouts/posts/single.html](layouts/posts/single.html)에 두었으므로, 테마를 업데이트하면 원본과 비교해 보세요.
+
 ### 카테고리 / 태그
 
 별도 등록 없이 front matter에 쓰기만 하면 자동으로 생기고, `/categories/`, `/tags/` 메뉴에 모아서 보여줍니다.
@@ -152,7 +165,7 @@ CMS 설정과 개발 글·회고 양식이 맞는지, 이미지만 남은 폴더
 
 ## 테마 업데이트
 
-LoveIt은 git submodule이라 별도로 업데이트해야 합니다.
+LoveIt은 git submodule이라 별도로 업데이트해야 합니다. `layouts/`에 테마 파일을 복사해 고친 것들(`posts/single.html`, `_partials/head/link.html`, `_partials/plugin/share.html`)은 업데이트 후 테마 원본의 변경 사항을 반영해야 할 수 있습니다.
 
 ```bash
 git submodule update --remote --merge

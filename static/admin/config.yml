@@ -53,6 +53,12 @@ collections:
         options: &category_options [개발, 회고, 생각, 기타]
         default: [기타]
       - { label: 태그, name: tags, widget: list, required: false }
+      - &series_field
+        label: 시리즈
+        name: series
+        widget: string
+        required: false
+        hint: 이어지는 글끼리 같은 이름을 쓰면 묶입니다 (예. 리버싱 입문). 글 위에 편 목록이 나오고, 편 순서는 작성일 순입니다.
       - &summary_field { label: 요약, name: summary, widget: text, required: false }
       - { label: 본문, name: body, widget: markdown }
 
@@ -82,6 +88,7 @@ collections:
         options: *category_options
         default: [개발]
       - { label: 태그, name: tags, widget: list, required: false }
+      - *series_field
       - *summary_field
       - label: 본문
         name: body

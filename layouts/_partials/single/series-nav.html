@@ -1,0 +1,23 @@
+{{- /* 시리즈 안에서의 이전 편 / 다음 편 링크 (본문 바로 아래) */ -}}
+{{- $page := . -}}
+{{- range .GetTerms "series" -}}
+    {{- $pages := .Pages.ByDate -}}
+    {{- $prev := false -}}
+    {{- $next := false -}}
+    {{- range $i, $p := $pages -}}
+        {{- if eq $p $page -}}
+            {{- if gt $i 0 -}}{{- $prev = index $pages (sub $i 1) -}}{{- end -}}
+            {{- if lt (add $i 1) (len $pages) -}}{{- $next = index $pages (add $i 1) -}}{{- end -}}
+        {{- end -}}
+    {{- end -}}
+    {{- if or $prev $next -}}
+        <nav class="series-nav" aria-label="시리즈 이전/다음 편">
+            {{- with $prev -}}
+                <a class="series-prev" href="{{ .RelPermalink }}"><span>← 이전 편</span>{{ .Title }}</a>
+            {{- end -}}
+            {{- with $next -}}
+                <a class="series-next" href="{{ .RelPermalink }}"><span>다음 편 →</span>{{ .Title }}</a>
+            {{- end -}}
+        </nav>
+    {{- end -}}
+{{- end -}}

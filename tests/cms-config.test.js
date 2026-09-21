@@ -49,7 +49,7 @@ describe('Decap CMS configuration', () => {
     );
     expect(posts.sortable_fields).toContainEqual({ field: 'date', default_sort: 'desc' });
     expect(posts.fields.map(({ name }) => name)).toEqual([
-      'title', 'date', 'draft', 'categories', 'tags', 'summary', 'body',
+      'title', 'date', 'draft', 'categories', 'tags', 'series', 'summary', 'body',
     ]);
     expect(posts.fields.find(({ name }) => name === 'draft').default).toBe(true);
   });
@@ -78,8 +78,8 @@ describe('Decap CMS configuration', () => {
       view_filters: posts.view_filters,
       filter: { field: 'tags', value: tag },
     });
-    // Same fields as the post collection; only the defaults differ.
-    expect(retro.fields.map(schema)).toEqual(posts.fields.map(schema));
+    // Same fields as the post collection except series; only the defaults differ.
+    expect(retro.fields.map(schema)).toEqual(posts.fields.filter(({ name: fieldName }) => fieldName !== 'series').map(schema));
     expect(field('draft').default).toBe(true);
     expect(field('categories').default).toEqual(['회고']);
     expect(field('tags').default).toEqual([tag, '일상']);

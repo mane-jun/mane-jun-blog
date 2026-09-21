@@ -1,0 +1,25 @@
+{{- /* 글의 front matter에 series가 있으면 같은 시리즈 글 목록을 날짜순으로 보여준다. 지금 글은 강조. */ -}}
+{{- $page := . -}}
+{{- range .GetTerms "series" -}}
+    {{- $pages := .Pages.ByDate -}}
+    {{- $number := 0 -}}
+    {{- range $i, $p := $pages -}}
+        {{- if eq $p $page -}}{{- $number = add $i 1 -}}{{- end -}}
+    {{- end -}}
+    <nav class="series-box" aria-label="시리즈">
+        <div class="series-heading">
+            <i class="fas fa-layer-group" aria-hidden="true"></i>
+            <a href="{{ .RelPermalink }}">{{ .LinkTitle }}</a>
+            <span class="series-count">{{ $number }} / {{ len $pages }}</span>
+        </div>
+        <ol class="series-list">
+            {{- range $pages -}}
+                {{- if eq . $page -}}
+                    <li class="series-current" aria-current="page">{{ .Title }}</li>
+                {{- else -}}
+                    <li><a href="{{ .RelPermalink }}">{{ .Title }}</a></li>
+                {{- end -}}
+            {{- end -}}
+        </ol>
+    </nav>
+{{- end -}}

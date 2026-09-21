@@ -19,6 +19,7 @@ enableEmoji = true
   path = "page"
 
 [taxonomies]
+  series = "series"
   category = "categories"
   tag = "tags"
 
