@@ -2,7 +2,7 @@ backend:
   name: github
   repo: mane-jun/mane-jun-blog
   branch: main
-  base_url: http://127.0.0.1:8787
+  base_url: https://mane-jun-blog-oauth.kimleo-study.workers.dev
   auth_endpoint: auth
   auth_scope: public_repo
 

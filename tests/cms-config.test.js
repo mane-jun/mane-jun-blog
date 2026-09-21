@@ -18,6 +18,7 @@ describe('Decap CMS configuration', () => {
       auth_endpoint: 'auth',
       auth_scope: 'public_repo',
     });
+    expect(config.backend.base_url).toMatch(/^https:\/\/[a-z0-9-]+\.[a-z0-9-]+\.workers\.dev$/u);
     expect(config.slug).toEqual({
       encoding: 'unicode',
       clean_accents: false,
