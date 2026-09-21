@@ -6,23 +6,24 @@ const requiredBindings = ['ALLOWED_ORIGIN', 'CF_API_TOKEN', 'CF_ACCOUNT_ID', 'CF
 const cacheSeconds = 300;
 const DAY_MS = 24 * 60 * 60 * 1000;
 
+// bot: 0 excludes bot traffic, matching the Cloudflare dashboard's default "Exclude bots" view.
 const query = `query ($account: string, $site: string, $start: Date, $end: Date) {
   viewer {
     accounts(filter: { accountTag: $account }) {
-      daily: rumPageloadEventsAdaptiveGroups(filter: { siteTag: $site, date_geq: $start, date_leq: $end }, limit: 100, orderBy: [date_ASC]) {
+      daily: rumPageloadEventsAdaptiveGroups(filter: { siteTag: $site, date_geq: $start, date_leq: $end, bot: 0 }, limit: 100, orderBy: [date_ASC]) {
         count
         sum { visits }
         dimensions { date }
       }
-      pages: rumPageloadEventsAdaptiveGroups(filter: { siteTag: $site, date_geq: $start, date_leq: $end }, limit: 10, orderBy: [count_DESC]) {
+      pages: rumPageloadEventsAdaptiveGroups(filter: { siteTag: $site, date_geq: $start, date_leq: $end, bot: 0 }, limit: 10, orderBy: [count_DESC]) {
         count
         dimensions { requestPath }
       }
-      referers: rumPageloadEventsAdaptiveGroups(filter: { siteTag: $site, date_geq: $start, date_leq: $end }, limit: 10, orderBy: [count_DESC]) {
+      referers: rumPageloadEventsAdaptiveGroups(filter: { siteTag: $site, date_geq: $start, date_leq: $end, bot: 0 }, limit: 10, orderBy: [count_DESC]) {
         count
         dimensions { refererHost }
       }
-      countries: rumPageloadEventsAdaptiveGroups(filter: { siteTag: $site, date_geq: $start, date_leq: $end }, limit: 10, orderBy: [count_DESC]) {
+      countries: rumPageloadEventsAdaptiveGroups(filter: { siteTag: $site, date_geq: $start, date_leq: $end, bot: 0 }, limit: 10, orderBy: [count_DESC]) {
         count
         dimensions { countryName }
       }
@@ -110,7 +111,7 @@ async function fetchStats(env, range, now) {
 // Stats are the same for every authorized user, so they are cached per range only, after the permission check.
 async function cachedStats(env, range, now) {
   const cache = typeof caches === 'undefined' ? null : caches.default;
-  const key = new Request(`https://stats-cache.internal/${env.CF_SITE_TAG}/${range}`);
+  const key = new Request(`https://stats-cache.internal/v2-no-bots/${env.CF_SITE_TAG}/${range}`);
   const hit = await cache?.match(key);
   if (hit) return hit.json();
   const stats = await fetchStats(env, range, now);

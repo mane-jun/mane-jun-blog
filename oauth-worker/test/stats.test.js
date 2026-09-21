@@ -128,6 +128,8 @@ describe('OAuth Worker /stats', () => {
     expect(init.headers.Authorization).toBe('Bearer cf-api-token');
     expect(request.variables).toEqual({ account: 'account-id', site: 'site-tag', start: '2026-09-15', end: '2026-09-21' });
     expect(init.body).not.toContain('github-token');
+    // Every group excludes bots like the Cloudflare dashboard does.
+    expect(request.query.match(/rumPageloadEventsAdaptiveGroups\(filter: \{[^}]*, bot: 0 \}/gu)).toHaveLength(4);
   });
 });
 
