@@ -152,6 +152,16 @@ backend:
 
 Worker 코드나 CMS 설정을 고친 뒤에는 `npm test`로 테스트를 돌릴 수 있습니다.
 
+## 댓글
+
+글 아래 댓글은 [Giscus](https://giscus.app)로 동작하며, 댓글은 이 저장소의 GitHub Discussions(**Announcements** 카테고리)에 글마다 하나의 토론으로 저장됩니다. 댓글을 쓰려면 GitHub 로그인이 필요합니다.
+
+- 새 댓글 알림은 GitHub 알림으로 옵니다.
+- 댓글 삭제·숨기기·차단은 저장소의 Discussions 탭에서 합니다.
+- 토론은 글 주소(경로)로 연결되므로, 글 주소를 바꾸면 기존 댓글과 연결이 끊깁니다.
+- 특정 글에서만 댓글을 끄려면 front matter에 `comment: false`를 넣습니다.
+- 설정은 `hugo.toml`의 `[params.page.comment.giscus]`에 있습니다.
+
 ## 카테고리 / 태그
 
 별도 등록 없이 front matter에 쓰기만 하면 자동으로 생성됩니다.

@@ -170,7 +170,21 @@ enableEmoji = true
     [params.page.share]
       enable = false
     [params.page.comment]
-      enable = false
+      enable = true
+      [params.page.comment.giscus]
+        enable = true
+        repo = "mane-jun/mane-jun-blog"
+        repoId = "R_kgDOTaK6Ug"
+        category = "Announcements"
+        categoryId = "DIC_kwDOTaK6Us4DGFYz"
+        lang = "ko"
+        mapping = "pathname"
+        reactionsEnabled = "1"
+        emitMetadata = "0"
+        inputPosition = "bottom"
+        lazyLoading = true
+        lightTheme = "light"
+        darkTheme = "dark"
     [params.page.library]
       [params.page.library.css]
       [params.page.library.js]
