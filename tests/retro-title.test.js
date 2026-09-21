@@ -54,20 +54,35 @@ describe('installRetroTitle', () => {
     };
   };
 
-  it('reloads a bare new retrospective route with a title', () => {
+  it('reloads a bare new daily retrospective with a title only', async () => {
     const win = fakeWindow('#/collections/daily/new');
-    installRetroTitle(win);
-    expect(win.location.replace).toHaveBeenCalledWith(expect.stringMatching(/^#\/collections\/daily\/new\?title=/u));
+    const loadBody = vi.fn();
+    await installRetroTitle(win, loadBody);
+    expect(loadBody).not.toHaveBeenCalled();
+    expect(win.location.replace).toHaveBeenCalledWith(expect.stringMatching(/^#\/collections\/daily\/new\?title=[^&]+$/u));
     expect(win.location.reload).toHaveBeenCalledOnce();
   });
 
-  it('reacts to later navigation and leaves other routes alone', () => {
+  it('adds the prefilled body for weekly and monthly retrospectives', async () => {
+    const win = fakeWindow('#/collections/weekly/new');
+    const body = '## 이번 주 숫자\n- 회고 쓴 날: 5/7\n';
+    await installRetroTitle(win, async () => body);
+    expect(win.location.replace).toHaveBeenCalledWith(expect.stringContaining(`&body=${encodeURIComponent(body)}`));
+  });
+
+  it('still opens the entry with a title when the numbers cannot be loaded', async () => {
+    const win = fakeWindow('#/collections/monthly/new');
+    await installRetroTitle(win, async () => { throw new Error('offline'); });
+    expect(win.location.replace).toHaveBeenCalledWith(expect.stringMatching(/^#\/collections\/monthly\/new\?title=[^&]+$/u));
+  });
+
+  it('reacts to later navigation and leaves other routes alone', async () => {
     const win = fakeWindow('#/collections/posts');
-    installRetroTitle(win);
+    await installRetroTitle(win, async () => null);
     expect(win.location.replace).not.toHaveBeenCalled();
 
     win.location.hash = '#/collections/monthly/new';
-    win.listeners.hashchange();
+    await win.listeners.hashchange();
     expect(win.location.replace).toHaveBeenCalledWith(expect.stringMatching(/^#\/collections\/monthly\/new\?title=/u));
     expect(win.location.reload).toHaveBeenCalledOnce();
   });
