@@ -46,4 +46,14 @@ describe('Decap CMS configuration', () => {
     ]);
     expect(posts.fields.find(({ name }) => name === 'draft').default).toBe(true);
   });
+
+  it('links the administrator to Cloudflare Web Analytics in a new tab', async () => {
+    const html = await read('static/admin/index.html');
+    const link = html.match(/<a\b[^>]*id="analytics-link"[^>]*>/u)?.[0];
+
+    expect(link).toBeDefined();
+    expect(link).toContain('href="https://dash.cloudflare.com/?to=/:account/web-analytics"');
+    expect(link).toContain('target="_blank"');
+    expect(link).toContain('rel="noopener noreferrer"');
+  });
 });

@@ -5,8 +5,40 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="robots" content="noindex, nofollow" />
     <title>mane-jun's log 관리자</title>
+    <style>
+      #analytics-link {
+        position: fixed;
+        right: 20px;
+        bottom: 20px;
+        z-index: 1000;
+        padding: 10px 16px;
+        border-radius: 999px;
+        background: #313d3e;
+        color: #fff;
+        font: 600 14px/1 system-ui, -apple-system, "Segoe UI", "Malgun Gothic", sans-serif;
+        text-decoration: none;
+        box-shadow: 0 2px 8px rgb(0 0 0 / 25%);
+      }
+      #analytics-link:hover,
+      #analytics-link:focus-visible {
+        background: #1e2728;
+      }
+      #analytics-link[hidden] {
+        display: none;
+      }
+    </style>
   </head>
   <body>
+    <a id="analytics-link" href="https://dash.cloudflare.com/?to=/:account/web-analytics" target="_blank" rel="noopener noreferrer">방문 통계 ↗</a>
+    <script>
+      // Hide the analytics shortcut while editing an entry so it never covers the editor.
+      const analyticsLink = document.getElementById('analytics-link');
+      const syncAnalyticsLink = () => {
+        analyticsLink.hidden = /\/(entries|new)\b/u.test(location.hash);
+      };
+      window.addEventListener('hashchange', syncAnalyticsLink);
+      syncAnalyticsLink();
+    </script>
     <script src="https://unpkg.com/decap-cms@3.15.1/dist/decap-cms.js"></script>
   </body>
 </html>
