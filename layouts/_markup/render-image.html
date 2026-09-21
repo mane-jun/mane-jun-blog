@@ -1,0 +1,38 @@
+{{- /* 본문 이미지 렌더 훅 (테마 _markup/render-image.html 대체).
+     글 폴더에 있는 JPEG·PNG·WebP는 EXIF 회전을 반영해 세우고 800/1200/1600px WebP로 줄여 쓴다.
+     원본은 이 페이지에서 링크하지 않으므로 사이트에 올라가지 않는다(단, 공개 저장소에는 남는다).
+     모든 사진은 눌러서 크게 볼 수 있다(lightgallery, hugo.toml의 params.page.lightgallery).
+     GIF·SVG·외부 이미지는 테마 방식 그대로 보여준다. */ -}}
+{{- $resource := dict "Path" .Destination "Resources" .Page.Resources | partial "function/resource.html" -}}
+{{- $options := dict "Title" .Text "Alt" .Text "Linked" true "Resources" .Page.Resources -}}
+{{- with .Title -}}{{- $options = merge $options (dict "Caption" .) -}}{{- end -}}
+
+{{- if and $resource (in (slice "jpeg" "png" "webp") $resource.MediaType.SubType) -}}
+    {{- $image := $resource.Filter images.AutoOrient -}}
+    {{- $fit := dict -}}
+    {{- range $name, $width := dict "small" 800 "src" 1200 "large" 1600 -}}
+        {{- if gt $image.Width $width -}}
+            {{- $fit = merge $fit (dict $name ($image.Resize (printf "%dx webp q80" $width))) -}}
+        {{- else -}}
+            {{- $fit = merge $fit (dict $name ($image.Process "webp q80")) -}}
+        {{- end -}}
+    {{- end -}}
+    {{- $options = merge $options (dict
+        "Src" $fit.src.RelPermalink
+        "SrcSmall" $fit.small.RelPermalink
+        "SrcLarge" $fit.large.RelPermalink
+        "Width" $fit.src.Width
+        "Height" $fit.src.Height
+    ) -}}
+{{- else -}}
+    {{- $options = merge $options (dict "Src" .Destination) -}}
+{{- end -}}
+
+{{- if .Title -}}
+    <figure>
+        {{- partial "plugin/img.html" $options -}}
+        <figcaption class="image-caption">{{ .Title | safeHTML }}</figcaption>
+    </figure>
+{{- else -}}
+    {{- partial "plugin/img.html" $options -}}
+{{- end -}}

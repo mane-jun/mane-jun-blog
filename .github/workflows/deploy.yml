@@ -40,6 +40,14 @@ jobs:
         id: pages
         uses: actions/configure-pages@v5
 
+      # 본문 사진 변환 결과(WebP)를 다음 빌드에 재사용해 사진이 많아져도 빌드가 느려지지 않게 한다.
+      - name: Cache processed images
+        uses: actions/cache@v4
+        with:
+          path: resources/_gen
+          key: hugo-resources-${{ github.sha }}
+          restore-keys: hugo-resources-
+
       - name: Build with Hugo
         env:
           HUGO_ENVIRONMENT: production

@@ -144,6 +144,14 @@ comment: false                  # 선택: 이 글만 댓글 끄기
 - 토론은 글 주소로 연결되므로 **글 주소를 바꾸면 기존 댓글과 연결이 끊깁니다.**
 - 특정 글에서만 댓글을 끄려면 front matter에 `comment: false`를 넣습니다. 설정은 [hugo.toml](hugo.toml)의 `[params.page.comment.giscus]`에 있습니다.
 
+### 사진
+
+- 글 폴더에 올린 JPEG·PNG·WebP 사진은 빌드할 때 자동으로 **800 / 1200 / 1600px WebP**로 줄어들고, 화면에 맞는 크기가 쓰입니다. 휴대폰 사진의 회전 정보(EXIF)를 반영해 바로 세우고, 줄인 사진에는 촬영 위치 같은 EXIF가 남지 않습니다. 원본 크기 그대로 올려도 됩니다.
+- 모든 사진은 **눌러서 크게 볼 수 있습니다**(확대·넘기기). `![설명](사진.jpg "캡션")`처럼 따옴표 안에 캡션을 쓰면 사진 아래와 크게 보기 화면에 나옵니다.
+- GIF·SVG와 외부 주소의 이미지는 변환하지 않고 그대로 보여줍니다.
+- **주의:** 원본 파일은 공개 저장소에 그대로 남고 사이트 폴더에도 복사되므로, 원본의 EXIF(촬영 위치 등)는 누구나 볼 수 있습니다. 위치가 드러나면 안 되는 사진은 휴대폰 카메라의 위치 태그를 끄거나 위치 정보를 지운 뒤 올리세요.
+- 변환은 [render-image.html](layouts/_markup/render-image.html)이 하고, 변환 결과는 GitHub Actions가 캐시해 다음 배포에 재사용합니다.
+
 ### 공유 버튼과 링크 미리보기
 
 - 글 아래에 X, Threads, Facebook, LinkedIn, **링크 복사** 버튼이 있습니다. 켜고 끄는 설정은 [hugo.toml](hugo.toml)의 `[params.page.share]`입니다.
@@ -234,6 +242,7 @@ mane-jun-blog/
 | [layouts/posts/single.html](layouts/posts/single.html) | 테마 복사본 | 글 페이지에 시리즈 목록(본문 위)·이전/다음 편(본문 아래) 추가 |
 | [layouts/_partials/head/link.html](layouts/_partials/head/link.html) | 테마 복사본 | 아이콘 경로를 `/mane-jun-blog/` 하위로, 네이버 인증 태그, 아래 두 스크립트 포함 |
 | [layouts/_partials/plugin/share.html](layouts/_partials/plugin/share.html) | 테마 복사본 | 공유 버튼에 "링크 복사" 추가 |
+| [layouts/_markup/render-image.html](layouts/_markup/render-image.html) | 대체 | 본문 사진을 WebP로 줄이고 회전 보정, 모든 사진을 크게 보기로 연결 |
 | [layouts/_partials/plugin/analytics.html](layouts/_partials/plugin/analytics.html) | 대체 | Cloudflare Web Analytics 비콘만 사용 |
 | [layouts/robots.txt](layouts/robots.txt) | 대체 | 올바른 사이트맵 주소 |
 | [layouts/_partials/head/giscus-reactions-fix.html](layouts/_partials/head/giscus-reactions-fix.html) | 추가 | 테마가 다크/라이트 전환 때 댓글 반응(이모지) 버튼을 끄는 버그를 되돌림 |
