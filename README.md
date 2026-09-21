@@ -86,7 +86,7 @@ GitHub → Settings → Developer settings → OAuth Apps → **New OAuth App**
 
 - Application name: `mane-jun blog CMS`
 - Homepage URL: Worker 주소 (예: `https://mane-jun-blog-oauth.<workers-서브도메인>.workers.dev`)
-- Authorization callback URL: Worker 주소 + `/callback`
+- Authorization callback URL (화면에 따라 **Redirect URLs**): Worker 주소 + `/callback` 하나만 등록하고, 와일드카드 매칭은 끈 상태로 둡니다.
 
 생성 후 Client ID를 복사하고 **Generate a new client secret**으로 Client Secret을 발급받습니다.
 
