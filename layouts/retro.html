@@ -1,4 +1,4 @@
-{{- /* 회고 모아보기 (/retro/): 일간회고 잔디 + 숫자 + 주간·월간회고 목록.
+{{- /* 회고 모아보기 (/retro/): 숫자 + 일간회고 잔디(컨디션/운동) + 월별 컨디션 + 주간·월간회고 목록.
      날짜는 제목(2026/09/21 일간회고)에서, 컨디션·운동은 본문(컨디션: 3/5, 운동: O)에서 읽는다.
      "오늘" 기준 계산(연속 기록, 이번 달)은 빌드 시점이 아니라 보는 사람의 한국 시간으로 하도록 JS에서 한다. */ -}}
 {{- define "title" }}{{ .Title }} - {{ .Site.Title }}{{ end -}}
@@ -29,31 +29,50 @@
 
     <div class="page single retro-page">
         <h1 class="single-title">{{ .Title }}</h1>
+        <p class="retro-summary">지금까지 일간 {{ len $daily }} · 주간 {{ len $weekly }} · 월간 {{ len $monthly }}개의 회고를 썼어요.</p>
 
         <section class="retro-stats" id="retro-stats" aria-label="회고 숫자">
             <div><strong data-stat="streak">-</strong><span>연속 기록</span></div>
             <div><strong data-stat="month">-</strong><span>이번 달 쓴 날</span></div>
             <div><strong data-stat="condition">-</strong><span>이번 달 평균 컨디션</span></div>
-            <div><strong>{{ len $daily }} · {{ len $weekly }} · {{ len $monthly }}</strong><span>일간 · 주간 · 월간</span></div>
+            <div><strong data-stat="exercise">-</strong><span>이번 달 운동한 날</span></div>
         </section>
 
         <section class="retro-grass-section" aria-label="일간회고 잔디">
-            <h2>일간회고</h2>
-            <div class="retro-grass-scroll" id="retro-grass-scroll">
-                <div class="retro-grass" id="retro-grass" role="grid"></div>
+            <div class="retro-grass-head">
+                <h2>일간회고</h2>
+                <div class="retro-mode" role="group" aria-label="잔디 색 기준">
+                    <button type="button" data-mode="condition" aria-pressed="true">컨디션</button>
+                    <button type="button" data-mode="exercise" aria-pressed="false">운동</button>
+                </div>
             </div>
-            <div class="retro-legend">
+            <div class="retro-grass-scroll" id="retro-grass-scroll">
+                <div class="retro-grass" id="retro-grass" data-mode="condition" role="grid"></div>
+            </div>
+            <div class="retro-legend" data-legend="condition">
                 <span>컨디션</span>
-                <i class="level-0" title="회고 없음"></i>
-                <i class="level-1" title="1/5"></i>
-                <i class="level-2" title="2/5"></i>
-                <i class="level-3" title="3/5"></i>
-                <i class="level-4" title="4/5"></i>
-                <i class="level-5" title="5/5"></i>
+                <i data-level="0" title="회고 없음"></i>
+                <i data-level="1" title="1/5"></i>
+                <i data-level="2" title="2/5"></i>
+                <i data-level="3" title="3/5"></i>
+                <i data-level="4" title="4/5"></i>
+                <i data-level="5" title="5/5"></i>
                 <span>좋음</span>
                 <span class="retro-legend-note">컨디션을 안 적은 날은 중간 색</span>
             </div>
+            <div class="retro-legend" data-legend="exercise" hidden>
+                <i data-ex="O"></i><span>운동함</span>
+                <i data-ex="X"></i><span>안 함</span>
+                <i data-ex="?"></i><span>기록 없음</span>
+                <i data-level="0"></i><span>회고 없음</span>
+            </div>
             <noscript><p>잔디를 보려면 JavaScript가 필요합니다.</p></noscript>
+        </section>
+
+        <section class="retro-months-section" aria-label="월별 컨디션">
+            <h2>월별 컨디션</h2>
+            <div class="retro-months" id="retro-months"></div>
+            <p class="retro-legend-note">막대 높이는 그달 일간회고의 평균 컨디션(5점 만점)이에요. 막대에 마우스를 올리면 회고 쓴 날과 운동한 날이 보여요.</p>
         </section>
 
         <div class="retro-lists">
@@ -84,6 +103,11 @@
         var DAY = 86400000;
         var pad = function (n) { return String(n).padStart(2, '0'); };
         var key = function (d) { return d.getUTCFullYear() + '-' + pad(d.getUTCMonth() + 1) + '-' + pad(d.getUTCDate()); };
+        var average = function (list) {
+            var rated = list.filter(function (e) { return e.condition > 0; });
+            return rated.length ? rated.reduce(function (s, e) { return s + e.condition; }, 0) / rated.length : null;
+        };
+        var exercisedDays = function (list) { return list.filter(function (e) { return e.exercise === 'O'; }).length; };
         // 한국 시간 기준 오늘 (UTC 필드로 다룬다)
         var now = new Date(Date.now() + 9 * 3600000);
         var today = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()));
@@ -95,13 +119,14 @@
 
         var monthPrefix = key(today).slice(0, 7);
         var monthEntries = entries.filter(function (e) { return e.date.slice(0, 7) === monthPrefix && e.date <= key(today); });
-        var rated = monthEntries.filter(function (e) { return e.condition > 0; });
+        var monthAverage = average(monthEntries);
         var set = function (name, text) { document.querySelector('[data-stat="' + name + '"]').textContent = text; };
         set('streak', streak + '일');
         set('month', monthEntries.length + ' / ' + today.getUTCDate() + '일');
-        set('condition', rated.length ? (rated.reduce(function (s, e) { return s + e.condition; }, 0) / rated.length).toFixed(1) + ' / 5' : '-');
+        set('condition', monthAverage === null ? '-' : monthAverage.toFixed(1) + ' / 5');
+        set('exercise', exercisedDays(monthEntries) + '일');
 
-        // 잔디: 월요일 시작 주 53개, 이번 주가 오른쪽 끝
+        // 잔디: 월요일 시작 주 53개, 이번 주가 오른쪽 끝. 칸마다 컨디션(data-level)과 운동(data-ex)을 담고, 모드에 따라 색을 고른다.
         var grass = document.getElementById('retro-grass');
         var weekday = (today.getUTCDay() + 6) % 7; // 월=0 … 일=6
         var start = new Date(today.getTime() - (52 * 7 + weekday) * DAY);
@@ -109,13 +134,13 @@
         for (var w = 0; w < 53; w++) {
             var col = document.createElement('div');
             col.className = 'retro-week';
-            var first = new Date(start.getTime() + w * 7 * DAY);
+            var weekStart = new Date(start.getTime() + w * 7 * DAY);
             var label = document.createElement('span');
             label.className = 'retro-month';
-            if (first.getUTCMonth() !== lastMonth) { label.textContent = (first.getUTCMonth() + 1) + '월'; lastMonth = first.getUTCMonth(); }
+            if (weekStart.getUTCMonth() !== lastMonth) { label.textContent = (weekStart.getUTCMonth() + 1) + '월'; lastMonth = weekStart.getUTCMonth(); }
             col.appendChild(label);
             for (var i = 0; i < 7; i++) {
-                var day = new Date(first.getTime() + i * DAY);
+                var day = new Date(weekStart.getTime() + i * DAY);
                 var k = key(day);
                 var e = byDate[k];
                 var cell = document.createElement(e ? 'a' : 'span');
@@ -124,10 +149,11 @@
                     cell.classList.add('future');
                 } else if (e) {
                     cell.href = e.url;
-                    cell.classList.add('level-' + (e.condition || 3));
-                    cell.title = k + ' · 컨디션 ' + (e.condition ? e.condition + '/5' : '미기록') + (e.exercise ? ' · 운동 ' + e.exercise : '');
+                    cell.dataset.level = e.condition || 3;
+                    cell.dataset.ex = e.exercise || '?';
+                    cell.title = k + ' · 컨디션 ' + (e.condition ? e.condition + '/5' : '미기록') + ' · 운동 ' + (e.exercise || '미기록');
                 } else {
-                    cell.classList.add('level-0');
+                    cell.dataset.level = 0;
                     cell.title = k;
                 }
                 col.appendChild(cell);
@@ -136,6 +162,54 @@
         }
         var scroller = document.getElementById('retro-grass-scroll');
         scroller.scrollLeft = scroller.scrollWidth;
+
+        // 컨디션/운동 전환. 고른 모드는 이 브라우저에만 기억한다.
+        var setMode = function (mode) {
+            grass.dataset.mode = mode;
+            document.querySelectorAll('.retro-mode button').forEach(function (b) { b.setAttribute('aria-pressed', String(b.dataset.mode === mode)); });
+            document.querySelectorAll('[data-legend]').forEach(function (l) { l.hidden = l.dataset.legend !== mode; });
+            try { localStorage.setItem('retro-grass-mode', mode); } catch (err) { /* 저장하지 못해도 동작에는 문제없음 */ }
+        };
+        document.querySelectorAll('.retro-mode button').forEach(function (b) {
+            b.addEventListener('click', function () { setMode(b.dataset.mode); });
+        });
+        try { if (localStorage.getItem('retro-grass-mode') === 'exercise') setMode('exercise'); } catch (err) { /* 기본값 유지 */ }
+
+        // 월별 컨디션: 이번 달을 포함한 최근 12개월
+        var months = document.getElementById('retro-months');
+        for (var m = 11; m >= 0; m--) {
+            var monthStart = new Date(Date.UTC(today.getUTCFullYear(), today.getUTCMonth() - m, 1));
+            var prefix = key(monthStart).slice(0, 7);
+            var list = entries.filter(function (e) { return e.date.slice(0, 7) === prefix; });
+            var avg = average(list);
+            var column = document.createElement('div');
+            column.className = 'retro-month-col';
+            column.title = prefix + ' · 평균 컨디션 ' + (avg === null ? '-' : avg.toFixed(1)) + ' · 회고 ' + list.length + '일 · 운동 ' + exercisedDays(list) + '일';
+            var value = document.createElement('span');
+            value.className = 'retro-month-value';
+            value.textContent = avg === null ? '-' : avg.toFixed(1);
+            var track = document.createElement('div');
+            track.className = 'retro-month-track';
+            var bar = document.createElement('div');
+            bar.className = 'retro-month-bar';
+            bar.style.height = (avg === null ? 0 : avg / 5 * 100) + '%';
+            if (avg !== null) bar.dataset.level = Math.round(avg);
+            track.appendChild(bar);
+            // 월 이름 아래 작은 줄에 연도를 적는다(첫 칸과 1월만). 좁은 화면에서는 "월"을 숨긴다(CSS).
+            var name = document.createElement('span');
+            name.className = 'retro-month-name';
+            var number = document.createElement('span');
+            number.textContent = monthStart.getUTCMonth() + 1;
+            var suffix = document.createElement('span');
+            suffix.className = 'retro-month-suffix';
+            suffix.textContent = '월';
+            var year = document.createElement('span');
+            year.className = 'retro-month-year';
+            year.textContent = m === 11 || monthStart.getUTCMonth() === 0 ? monthStart.getUTCFullYear() : '';
+            name.append(number, suffix);
+            column.append(value, track, name, year);
+            months.appendChild(column);
+        }
     })();
     </script>
 {{- end -}}

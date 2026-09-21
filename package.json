@@ -6,7 +6,8 @@
     "test": "vitest run",
     "test:cms": "vitest run tests/cms-config.test.js",
     "test:oauth": "vitest run oauth-worker/test",
-    "deploy:oauth": "wrangler deploy --config oauth-worker/wrangler.jsonc"
+    "deploy:oauth": "wrangler deploy --config oauth-worker/wrangler.jsonc",
+    "check:links": "hugo --quiet --environment production && node scripts/check-links.mjs"
   },
   "devDependencies": {
     "vitest": "~4.1.0",

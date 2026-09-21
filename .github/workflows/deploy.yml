@@ -77,6 +77,10 @@ jobs:
             --minify \
             --baseURL "${{ steps.pages.outputs.base_url }}/"
 
+      # 사이트 안쪽 링크·이미지 주소가 깨졌으면 배포하지 않는다 (scripts/check-links.mjs).
+      - name: Check internal links
+        run: node scripts/check-links.mjs public
+
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:

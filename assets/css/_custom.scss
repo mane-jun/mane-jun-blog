@@ -74,6 +74,8 @@
 // 회고 모아보기 (layouts/retro.html)
 $retro-levels: (0: #ebedf0, 1: #c6e48b, 2: #9be077, 3: #6cc644, 4: #40a02b, 5: #216e39);
 $retro-levels-dark: (0: #2f3136, 1: #1f4d2b, 2: #26683a, 3: #2e8b47, 4: #3fb25d, 5: #5fd37a);
+// 운동 모드: 값 → (라이트, 다크). O 운동함, X 안 함, ? 회고는 있지만 운동 기록 없음
+$retro-exercise: ("O": (#40a02b, #3fb25d), "X": (#f2b8b5, #6e3a3a), "?": (#c9ced6, #4b5058));
 
 .retro-page {
   h2 {
@@ -156,12 +158,82 @@ $retro-levels-dark: (0: #2f3136, 1: #1f4d2b, 2: #26683a, 3: #2e8b47, 4: #3fb25d,
     visibility: hidden;
   }
 
+  // 잔디 색: 컨디션 모드는 data-level(0~5), 운동 모드는 data-ex(O·X·?)로 칠한다. 범례와 월별 막대도 같은 색을 쓴다.
   @each $level, $color in $retro-levels {
-    .level-#{$level} {
+    .retro-grass[data-mode=condition] .retro-day[data-level="#{$level}"],
+    .retro-legend i[data-level="#{$level}"],
+    .retro-month-bar[data-level="#{$level}"] {
       background-color: $color;
 
       [theme=dark] & {
         background-color: map-get($retro-levels-dark, $level);
+      }
+    }
+  }
+
+  // 운동 모드의 "회고 없음"은 컨디션 모드와 같은 빈 칸 색
+  .retro-grass[data-mode=exercise] .retro-day[data-level="0"]:not([data-ex]) {
+    background-color: map-get($retro-levels, 0);
+
+    [theme=dark] & {
+      background-color: map-get($retro-levels-dark, 0);
+    }
+  }
+
+  @each $value, $colors in $retro-exercise {
+    .retro-grass[data-mode=exercise] .retro-day[data-ex="#{$value}"],
+    .retro-legend i[data-ex="#{$value}"] {
+      background-color: nth($colors, 1);
+
+      [theme=dark] & {
+        background-color: nth($colors, 2);
+      }
+    }
+  }
+
+  .retro-summary {
+    margin: .25rem 0 0;
+    color: $global-font-secondary-color;
+
+    [theme=dark] & {
+      color: $global-font-secondary-color-dark;
+    }
+  }
+
+  .retro-grass-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: .5rem;
+
+    h2 {
+      margin-bottom: .5rem;
+    }
+  }
+
+  .retro-mode {
+    display: flex;
+    gap: .25rem;
+
+    button {
+      padding: .15rem .7rem;
+      border: 1px solid $global-border-color;
+      border-radius: 999px;
+      background: none;
+      color: inherit;
+      font: inherit;
+      font-size: .8rem;
+      cursor: pointer;
+
+      [theme=dark] & {
+        border-color: $global-border-color-dark;
+      }
+
+      &[aria-pressed="true"] {
+        border-color: map-get($retro-levels, 4);
+        background-color: map-get($retro-levels, 4);
+        color: #fff;
       }
     }
   }
@@ -175,12 +247,74 @@ $retro-levels-dark: (0: #2f3136, 1: #1f4d2b, 2: #26683a, 3: #2e8b47, 4: #3fb25d,
     font-size: .75rem;
     color: $global-font-secondary-color;
 
+    &[hidden] {
+      display: none;
+    }
+
     span {
       margin: 0 .25rem;
     }
 
     .retro-legend-note {
       margin-left: 1rem;
+    }
+  }
+
+  .retro-legend-note {
+    font-size: .75rem;
+    color: $global-font-secondary-color;
+  }
+
+  // 월별 컨디션 막대 (최근 12개월)
+  .retro-months {
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+    gap: 4px;
+    align-items: end;
+  }
+
+  .retro-month-col {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    min-width: 0;
+    font-size: .7rem;
+    color: $global-font-secondary-color;
+  }
+
+  .retro-month-track {
+    display: flex;
+    align-items: flex-end;
+    width: 100%;
+    max-width: 28px;
+    height: 80px;
+    border-radius: 3px;
+    background-color: map-get($retro-levels, 0);
+
+    [theme=dark] & {
+      background-color: map-get($retro-levels-dark, 0);
+    }
+  }
+
+  .retro-month-bar {
+    width: 100%;
+    border-radius: 3px;
+  }
+
+  .retro-month-name {
+    white-space: nowrap;
+  }
+
+  .retro-month-year {
+    min-height: .9rem;
+    font-size: .6rem;
+    line-height: .9rem;
+  }
+
+  @media (max-width: 680px) {
+    .retro-month-suffix {
+      display: none;
     }
   }
 
