@@ -1,0 +1,10 @@
+{{- /* 서비스 워커(static/sw.js) 등록: 배포 환경에서만. 첫 화면을 그리는 데 방해되지 않게 페이지 로딩이 끝난 뒤 등록한다. */ -}}
+{{- if hugo.IsProduction -}}
+<script>
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+            navigator.serviceWorker.register({{ "sw.js" | relURL }}).catch(function () { /* 등록 실패해도 사이트는 그대로 동작 */ });
+        });
+    }
+</script>
+{{- end -}}

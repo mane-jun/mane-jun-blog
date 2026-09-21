@@ -194,6 +194,9 @@ comment: false                  # 선택: 이 글만 댓글 끄기
 - 켜질 때 잠깐 보이는 시작 화면은 휴대폰이 앱 설정으로 자동으로 만드는 화면이라, 페이지 안의 로딩창으로는 바꿀 수 없습니다. 배경은 블로그 다크 테마 색(`#292a2d`)이고, 가운데에 개구리 아이콘(512px, 안드로이드가 모양에 맞춰 자르는 마스커블 아이콘 포함)이 나옵니다.
 - 상단 상태 표시줄은 헤더 색(`#252627`, [hugo.toml](hugo.toml)의 `[params.app] themeColor`)입니다.
 - 앱 설정을 바꾸면 **앱을 지우고 다시 설치**해야 시작 화면과 아이콘이 새로 반영됩니다.
+- **빠른 시작(서비스 워커):** 한 번 받은 CSS·JS·글꼴·이미지를 휴대폰에 저장해 두고 바로 씁니다(뒤에서 새 버전으로 갱신). 글 페이지·검색 데이터·RSS는 항상 새로 받아서 새 글이 늦게 보이지 않고, 네트워크가 3초 넘게 느리거나 끊겼을 때만 저장해 둔 페이지를 보여줍니다. 한 번도 안 연 페이지를 오프라인에서 열면 안내 화면이 나옵니다. 관리자 페이지와 댓글·통계 같은 외부 서비스는 건드리지 않습니다.
+- 서비스 워커는 [sw.js](static/sw.js)이고 배포 환경에서만 등록됩니다(개발 서버 `hugo server`에서는 등록 안 함). 저장 방식에 문제가 생겨 모두 비우고 싶으면 `sw.js`의 `VERSION`을 올려 배포하세요.
+- 테마 CSS·JS를 바꿨는데 휴대폰에 예전 모양이 보이면 한 번 더 새로 고치면 됩니다(첫 번째는 저장된 파일, 그다음부터 새 파일).
 
 ## 운영
 
@@ -306,13 +309,14 @@ mane-jun-blog/
 | --- | --- | --- |
 | [layouts/home.html](layouts/home.html) | 테마 복사본 | 홈 글 목록에서 `excludeTags` 태그(일간회고) 글 제외 |
 | [layouts/posts/single.html](layouts/posts/single.html) | 테마 복사본 | 글 페이지에 시리즈 목록(본문 위)·이전/다음 편·관련 글(본문 아래) 추가, 글자 수를 "N자"로 표시 |
-| [layouts/_partials/head/link.html](layouts/_partials/head/link.html) | 테마 복사본 | 아이콘 경로를 `/mane-jun-blog/` 하위로, 네이버 인증 태그, 아래 두 스크립트 포함 |
+| [layouts/_partials/head/link.html](layouts/_partials/head/link.html) | 테마 복사본 | 아이콘 경로를 `/mane-jun-blog/` 하위로, 네이버 인증 태그, 아래 `head/` 스크립트들 포함 |
 | [layouts/_partials/plugin/share.html](layouts/_partials/plugin/share.html) | 테마 복사본 | 공유 버튼에 "링크 복사" 추가 |
 | [layouts/_markup/render-image.html](layouts/_markup/render-image.html) | 대체 | 본문 사진을 WebP로 줄이고 회전 보정, 모든 사진을 크게 보기로 연결 |
 | [layouts/_partials/plugin/analytics.html](layouts/_partials/plugin/analytics.html) | 대체 | Cloudflare Web Analytics 비콘만 사용 |
 | [layouts/robots.txt](layouts/robots.txt) | 대체 | 올바른 사이트맵 주소 |
 | [layouts/_partials/head/giscus-reactions-fix.html](layouts/_partials/head/giscus-reactions-fix.html) | 추가 | 테마가 다크/라이트 전환 때 댓글 반응(이모지) 버튼을 끄는 버그를 되돌림 |
 | [layouts/_partials/head/admin-link.html](layouts/_partials/head/admin-link.html) | 추가 | 관리자에 로그인한 브라우저에서만 헤더에 관리자·글 편집 바로가기 표시 |
+| [layouts/_partials/head/service-worker.html](layouts/_partials/head/service-worker.html) | 추가 | 배포 환경에서 서비스 워커(`static/sw.js`) 등록 |
 | [layouts/_partials/single/series.html](layouts/_partials/single/series.html), [series-nav.html](layouts/_partials/single/series-nav.html) | 추가 | 시리즈 목록, 이전/다음 편 |
 | [layouts/_partials/single/related.html](layouts/_partials/single/related.html) | 추가 | 관련 글 추천 |
 | [layouts/retro.html](layouts/retro.html) | 추가 | 회고 모아보기 페이지 |
