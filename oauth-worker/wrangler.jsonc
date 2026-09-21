@@ -1,0 +1,14 @@
+{
+  "$schema": "../node_modules/wrangler/config-schema.json",
+  "name": "mane-jun-blog-oauth",
+  "main": "src/index.js",
+  "compatibility_date": "2026-09-19",
+  "vars": {
+    "ALLOWED_ORIGIN": "https://mane-jun.github.io",
+    "ALLOWED_SITE_ID": "mane-jun.github.io",
+    "OAUTH_SCOPE": "public_repo"
+  },
+  "secrets": {
+    "required": ["GITHUB_OAUTH_ID", "GITHUB_OAUTH_SECRET", "OAUTH_STATE_SECRET"]
+  }
+}
