@@ -1,7 +1,7 @@
 // Service worker: makes the installed app (and repeat visits) start faster by keeping the site's files on the device.
 // Registered by layouts/_partials/head/service-worker.html (production only). Scope: /mane-jun-blog/.
 //
-// - Pages (HTML) and data (index.json, RSS): always fetched from the network so new posts show up right away.
+// - Pages (HTML), data (index.json, RSS) and the app manifest: always fetched from the network so new posts show up right away.
 //   The saved copy is used only when the network is slow (NETWORK_TIMEOUT_MS) or offline.
 // - CSS, JS, fonts, images: served from the device at once and refreshed in the background (stale-while-revalidate).
 // - The admin (/admin/), other sites (comments, analytics) and non-GET requests are left alone.
@@ -93,7 +93,7 @@ self.addEventListener('fetch', (event) => {
   if (url.pathname.startsWith(`${scopePath}admin/`) || url.pathname.endsWith('/sw.js')) return;
 
   const isPage = request.mode === 'navigate' || request.destination === 'document';
-  const isData = /\.(json|xml)$/u.test(url.pathname);
+  const isData = /\.(json|xml|webmanifest)$/u.test(url.pathname);
   if (isPage || isData) {
     event.respondWith(networkFirst(event, request));
   } else {
