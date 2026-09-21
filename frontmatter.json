@@ -46,6 +46,8 @@
       ]
     }
   ],
+  "frontMatter.taxonomy.dateFormat": "yyyy-MM-dd'T'HH:mm:ssXXX",
+  "frontMatter.global.timezone": "Asia/Seoul",
   "frontMatter.framework.id": "hugo",
   "frontMatter.content.publicFolder": "static",
   "frontMatter.preview.host": "http://localhost:1313",
