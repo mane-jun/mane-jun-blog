@@ -371,3 +371,26 @@ $retro-exercise: ("O": (#40a02b, #3fb25d), "X": (#f2b8b5, #6e3a3a), "?": (#c9ced
     }
   }
 }
+
+// 읽기 진행률 (layouts/_partials/single/reading-progress.html): 헤더(z-index 150)보다 위에 얇게 표시
+.reading-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 250;
+  height: 3px;
+  pointer-events: none;
+
+  span {
+    display: block;
+    height: 100%;
+    background-color: $single-link-color;
+    transform: scaleX(0);
+    transform-origin: 0 50%;
+
+    [theme=dark] & {
+      background-color: $single-link-color-dark;
+    }
+  }
+}

@@ -1,4 +1,4 @@
-{{- /* 테마 posts/single.html 복사본 + 시리즈 목록(본문 위), 이전/다음 편과 관련 글(본문 아래) 추가, 글자 수 표시. 테마 업데이트 시 원본과 비교할 것 */ -}}
+{{- /* 테마 posts/single.html 복사본 + 읽기 진행률, 시리즈 목록(본문 위), 이전/다음 편과 관련 글(본문 아래) 추가, 글자 수 표시. 테마 업데이트 시 원본과 비교할 것 */ -}}
 {{- define "title" }}{{ .Title }} - {{ .Site.Title }}{{ end -}}
 
 {{- define "content" -}}
@@ -18,6 +18,9 @@
             <div class="toc-content{{ if eq $toc.auto false }} always-active{{ end }}" id="toc-content-auto"></div>
         </div>
     {{- end -}}
+
+    {{- /* 사이트 추가: 읽기 진행률 막대 */ -}}
+    {{- partial "single/reading-progress.html" . -}}
 
     <article class="page single">
         {{- /* Title */ -}}

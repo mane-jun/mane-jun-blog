@@ -1,0 +1,28 @@
+{{- /* 읽기 진행률: 화면 맨 위의 얇은 막대. 본문(#content) 기준이라 아래 댓글이 길어도 본문 끝에서 100%가 된다.
+     한 화면에 다 들어가는 짧은 글에서는 보이지 않는다. 본문보다 앞에 있으므로 문서를 다 읽은 뒤 시작한다. */ -}}
+<div class="reading-progress" aria-hidden="true"><span id="reading-progress-bar"></span></div>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        var bar = document.getElementById('reading-progress-bar');
+        var content = document.getElementById('content');
+        if (!bar || !content) return;
+        var ticking = false;
+        var update = function () {
+            ticking = false;
+            var rect = content.getBoundingClientRect();
+            // 본문 중 화면 아래 끝까지 지나간 비율. 본문 끝이 화면 아래에 닿으면 100%.
+            var progress = rect.height > window.innerHeight ? (window.innerHeight - rect.top) / rect.height : 0;
+            // 본문 아래 공간이 짧아 더 내릴 수 없으면(페이지 끝) 다 읽은 것으로 본다.
+            var atPageEnd = window.scrollY + window.innerHeight >= document.documentElement.scrollHeight - 2;
+            if (progress > 0 && atPageEnd) progress = 1;
+            bar.style.transform = 'scaleX(' + Math.min(1, Math.max(0, progress)) + ')';
+        };
+        var request = function () {
+            if (!ticking) { ticking = true; window.requestAnimationFrame(update); }
+        };
+        window.addEventListener('scroll', request, { passive: true });
+        window.addEventListener('resize', request);
+        window.addEventListener('load', request);
+        update();
+    });
+</script>

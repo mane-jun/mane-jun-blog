@@ -145,6 +145,12 @@ comment: false                  # 선택: 이 글만 댓글 끄기
 
 홈의 글 목록에는 **일간회고가 나오지 않습니다.** 매일 쓰는 일간회고에 개발 글이 밀려나지 않도록 뺀 것이고, 일간회고는 [회고 모아보기](#회고-모아보기)·전체글·카테고리·태그 페이지와 RSS에는 그대로 나옵니다. 홈에서 뺄 태그는 [hugo.toml](hugo.toml)의 `[params.home.posts] excludeTags`에서 바꿉니다.
 
+### 읽기 진행률과 수정일
+
+- 글 페이지 맨 위에 얇은 막대로 본문을 얼마나 읽었는지 보여줍니다. 한 화면에 다 들어가는 짧은 글에서는 보이지 않습니다.
+- 글 아래 "수정" 날짜는 Git 기록의 실제 마지막 수정일입니다(`hugo.toml`의 `enableGitInfo`). 관리자에서 저장만 해도 날짜가 바뀝니다.
+- 테마는 수정일 옆에 커밋 링크(작성자 이름·이메일 포함)를 붙일 수 있는데, 이메일이 페이지에 드러나지 않도록 `params.gitRepo`를 비워 두었습니다.
+
 ### 관련 글 추천
 
 글 아래에 **이런 글도 있어요**로 비슷한 글을 최대 3개 보여줍니다. 시리즈 > 태그 > 카테고리 순으로 많이 겹치는 글이 먼저 나오고, 겹치는 게 적으면 나오지 않습니다(태그를 꼼꼼히 달수록 잘 연결됩니다).
@@ -310,7 +316,7 @@ mane-jun-blog/
 | 파일 | 종류 | 하는 일 |
 | --- | --- | --- |
 | [layouts/home.html](layouts/home.html) | 테마 복사본 | 홈 글 목록에서 `excludeTags` 태그(일간회고) 글 제외 |
-| [layouts/posts/single.html](layouts/posts/single.html) | 테마 복사본 | 글 페이지에 시리즈 목록(본문 위)·이전/다음 편·관련 글(본문 아래) 추가, 글자 수를 "N자"로 표시 |
+| [layouts/posts/single.html](layouts/posts/single.html) | 테마 복사본 | 글 페이지에 읽기 진행률, 시리즈 목록(본문 위)·이전/다음 편·관련 글(본문 아래) 추가, 글자 수를 "N자"로 표시 |
 | [layouts/_partials/head/link.html](layouts/_partials/head/link.html) | 테마 복사본 | 아이콘 경로를 `/mane-jun-blog/` 하위로, 네이버 인증 태그, 아래 `head/` 스크립트들 포함 |
 | [layouts/_partials/plugin/share.html](layouts/_partials/plugin/share.html) | 테마 복사본 | 공유 버튼에 "링크 복사" 추가 |
 | [layouts/_markup/render-image.html](layouts/_markup/render-image.html) | 대체 | 본문 사진을 WebP로 줄이고 회전 보정, 모든 사진을 크게 보기로 연결 |
@@ -321,6 +327,7 @@ mane-jun-blog/
 | [layouts/_partials/head/service-worker.html](layouts/_partials/head/service-worker.html) | 추가 | 배포 환경에서 서비스 워커(`static/sw.js`) 등록 |
 | [layouts/_partials/single/series.html](layouts/_partials/single/series.html), [series-nav.html](layouts/_partials/single/series-nav.html) | 추가 | 시리즈 목록, 이전/다음 편 |
 | [layouts/_partials/single/related.html](layouts/_partials/single/related.html) | 추가 | 관련 글 추천 |
+| [layouts/_partials/single/reading-progress.html](layouts/_partials/single/reading-progress.html) | 추가 | 읽기 진행률 막대 |
 | [layouts/retro.html](layouts/retro.html) | 추가 | 회고 모아보기 페이지 |
 
 ### 테마 업데이트

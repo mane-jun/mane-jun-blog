@@ -10,7 +10,8 @@ hasCJKLanguage = true
 copyright = ""
 
 enableRobotsTXT = true
-enableGitInfo = false
+# 글 아래 "수정" 날짜를 Git 기록의 실제 마지막 수정일로 표시 (배포 워크플로는 fetch-depth: 0으로 전체 기록을 받음)
+enableGitInfo = true
 enableEmoji = true
 
 [pagination]
@@ -75,7 +76,8 @@ enableEmoji = true
 
 [params]
   defaultTheme = "dark"
-  gitRepo = "https://github.com/mane-jun/mane-jun-blog"
+  # 비워 둔다: 값이 있으면 테마가 "수정" 날짜 옆 커밋 링크에 작성자 이름·이메일을 넣는다(single/footer.html)
+  gitRepo = ""
   fingerprint = ""
   dateFormat = "2006-01-02"
   title = "mane-jun's log"
