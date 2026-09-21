@@ -34,7 +34,7 @@ describe('Decap CMS configuration', () => {
     });
     // Decap has no list join filter, so tags are read by index and prefixed only when present.
     expect(posts.summary).toBe(
-      "{{title}} · {{date | date('YYYY-MM-DD')}}"
+      "{{draft | ternary('[초안]', '[게시됨]')}} {{title}} · {{date | date('YYYY-MM-DD')}}"
       + "{{fields.tags.0 | ternary(' · #', '')}}{{fields.tags.0}}"
       + "{{fields.tags.1 | ternary(' #', '')}}{{fields.tags.1}}"
       + "{{fields.tags.2 | ternary(' #', '')}}{{fields.tags.2}}"
