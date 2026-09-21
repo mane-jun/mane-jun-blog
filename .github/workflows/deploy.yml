@@ -5,6 +5,9 @@ on:
     branches:
       - main
   workflow_dispatch:
+  # 예약 발행: 매시 7분에 작성일이 지났는데 아직 사이트에 없는 글이 있는지 확인하고, 있을 때만 배포한다.
+  schedule:
+    - cron: "7 * * * *"
 
 permissions:
   contents: read
@@ -20,7 +23,23 @@ defaults:
     shell: bash
 
 jobs:
+  scheduled:
+    if: github.event_name == 'schedule'
+    runs-on: ubuntu-latest
+    outputs:
+      deploy: ${{ steps.check.outputs.deploy }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Check for posts that are due but not live
+        id: check
+        run: node scripts/scheduled-posts.mjs
+
   build:
+    needs: scheduled
+    # push·수동 실행은 항상, 예약 확인은 올릴 글이 있을 때만 빌드한다.
+    if: ${{ !cancelled() && (github.event_name != 'schedule' || needs.scheduled.outputs.deploy == 'true') }}
     runs-on: ubuntu-latest
     env:
       HUGO_VERSION: 0.164.0
@@ -69,6 +88,7 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
     needs: build
+    if: ${{ !cancelled() && needs.build.result == 'success' }}
     steps:
       - name: Deploy to GitHub Pages
         id: deployment
