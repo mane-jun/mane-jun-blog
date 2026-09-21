@@ -135,6 +135,13 @@ comment: false                  # 선택: 이 글만 댓글 끄기
 
 홈의 글 목록에는 **일간회고가 나오지 않습니다.** 매일 쓰는 일간회고에 개발 글이 밀려나지 않도록 뺀 것이고, 일간회고는 [회고 모아보기](#회고-모아보기)·전체글·카테고리·태그 페이지와 RSS에는 그대로 나옵니다. 홈에서 뺄 태그는 [hugo.toml](hugo.toml)의 `[params.home.posts] excludeTags`에서 바꿉니다.
 
+### 관련 글 추천
+
+글 아래에 **이런 글도 있어요**로 비슷한 글을 최대 3개 보여줍니다. 시리즈 > 태그 > 카테고리 순으로 많이 겹치는 글이 먼저 나오고, 겹치는 게 적으면 나오지 않습니다(태그를 꼼꼼히 달수록 잘 연결됩니다).
+
+- 일간회고는 추천하지 않고, 일간회고 글 아래에는 추천을 띄우지 않습니다. 같은 시리즈 글은 시리즈 목록에 이미 있으므로 뺍니다.
+- 설정은 [hugo.toml](hugo.toml)의 `[related]`(점수)와 `[params.page.related]`(개수, 제외 태그)입니다.
+
 ### 회고 모아보기
 
 상단 메뉴 **회고**(`/retro/`)에서 회고를 한눈에 봅니다.
@@ -241,7 +248,7 @@ mane-jun-blog/
 │   ├── about.md                   # 소개 페이지
 │   ├── retro.md                   # 회고 모아보기 페이지
 │   └── posts/                     # 모든 글 (글마다 <슬러그>/index.md + 이미지)
-├── i18n/ko.toml                   # 테마에 없는 번역 ("시리즈")
+├── i18n/ko.toml                   # 테마에 없는 번역 ("시리즈"). 테마에 이미 있는 문구는 여기서 덮어써지지 않음
 ├── layouts/                       # 테마를 덮어쓰거나 추가한 템플릿 (아래 표)
 ├── oauth-worker/                  # 관리자 GitHub 로그인·방문 통계용 Cloudflare Worker
 ├── scripts/
@@ -263,7 +270,7 @@ mane-jun-blog/
 | 파일 | 종류 | 하는 일 |
 | --- | --- | --- |
 | [layouts/home.html](layouts/home.html) | 테마 복사본 | 홈 글 목록에서 `excludeTags` 태그(일간회고) 글 제외 |
-| [layouts/posts/single.html](layouts/posts/single.html) | 테마 복사본 | 글 페이지에 시리즈 목록(본문 위)·이전/다음 편(본문 아래) 추가 |
+| [layouts/posts/single.html](layouts/posts/single.html) | 테마 복사본 | 글 페이지에 시리즈 목록(본문 위)·이전/다음 편·관련 글(본문 아래) 추가, 글자 수를 "N자"로 표시 |
 | [layouts/_partials/head/link.html](layouts/_partials/head/link.html) | 테마 복사본 | 아이콘 경로를 `/mane-jun-blog/` 하위로, 네이버 인증 태그, 아래 두 스크립트 포함 |
 | [layouts/_partials/plugin/share.html](layouts/_partials/plugin/share.html) | 테마 복사본 | 공유 버튼에 "링크 복사" 추가 |
 | [layouts/_markup/render-image.html](layouts/_markup/render-image.html) | 대체 | 본문 사진을 WebP로 줄이고 회전 보정, 모든 사진을 크게 보기로 연결 |
@@ -272,6 +279,7 @@ mane-jun-blog/
 | [layouts/_partials/head/giscus-reactions-fix.html](layouts/_partials/head/giscus-reactions-fix.html) | 추가 | 테마가 다크/라이트 전환 때 댓글 반응(이모지) 버튼을 끄는 버그를 되돌림 |
 | [layouts/_partials/head/admin-link.html](layouts/_partials/head/admin-link.html) | 추가 | 관리자에 로그인한 브라우저에서만 헤더에 관리자·글 편집 바로가기 표시 |
 | [layouts/_partials/single/series.html](layouts/_partials/single/series.html), [series-nav.html](layouts/_partials/single/series-nav.html) | 추가 | 시리즈 목록, 이전/다음 편 |
+| [layouts/_partials/single/related.html](layouts/_partials/single/related.html) | 추가 | 관련 글 추천 |
 | [layouts/retro.html](layouts/retro.html) | 추가 | 회고 모아보기 페이지 |
 
 ### 테마 업데이트

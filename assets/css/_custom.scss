@@ -202,3 +202,38 @@ $retro-levels-dark: (0: #2f3136, 1: #1f4d2b, 2: #26683a, 3: #2e8b47, 4: #3fb25d,
     }
   }
 }
+
+// 관련 글 추천 (layouts/_partials/single/related.html)
+.related-posts {
+  margin: 2rem 0 1rem;
+  padding-top: 1rem;
+  border-top: 1px dashed $global-border-color;
+
+  [theme=dark] & {
+    border-top-color: $global-border-color-dark;
+  }
+
+  h2 {
+    margin: 0 0 .5rem;
+    font-size: 1.05rem;
+  }
+
+  ul {
+    margin: 0;
+    padding-left: 1.25rem;
+  }
+
+  li {
+    margin: .25rem 0;
+  }
+
+  time {
+    margin-left: .5rem;
+    font-size: .8rem;
+    color: $global-font-secondary-color;
+
+    [theme=dark] & {
+      color: $global-font-secondary-color-dark;
+    }
+  }
+}
