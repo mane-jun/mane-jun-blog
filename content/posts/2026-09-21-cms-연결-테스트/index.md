@@ -1,7 +1,7 @@
 ---
 title: CMS 연결 테스트
 date: 2026-09-21T16:44:00+09:00
-draft: true
+draft: false
 categories:
   - 기타
 tags: []
