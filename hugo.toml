@@ -167,8 +167,19 @@ enableEmoji = true
         mermaid = true
     [params.page.math]
       enable = false
+    # 테마 기본값에서 켜져 있는 버튼(HackerNews, Line, Weibo, Diaspora, Telegram)은 명시적으로 끔
     [params.page.share]
-      enable = false
+      enable = true
+      X = true
+      Threads = true
+      Facebook = true
+      Linkedin = true
+      CopyLink = true
+      HackerNews = false
+      Line = false
+      Weibo = false
+      Diaspora = false
+      Telegram = false
     [params.page.comment]
       enable = true
       [params.page.comment.giscus]
