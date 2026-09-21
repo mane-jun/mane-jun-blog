@@ -1,4 +1,8 @@
-{{- /* 테마 link.html 복사본: 아이콘 경로를 relURL로 바꿔 /mane-jun-blog/ 하위에서도 찾게 하고, 없는 safari-pinned-tab.svg 링크는 뺌 */ -}}
+{{- /* 테마 link.html 복사본: 아이콘 경로를 relURL로 바꿔 /mane-jun-blog/ 하위에서도 찾게 하고, 없는 safari-pinned-tab.svg 링크는 뺌.
+     테마가 지원하지 않는 네이버 서치어드바이저 인증 태그도 여기서 넣음 */ -}}
+{{- with .Site.Params.verification.naver -}}
+    <meta name="naver-site-verification" content="{{ . }}" />
+{{- end -}}
 {{- $cdn := .Scratch.Get "cdn" | default dict -}}
 {{- $fingerprint := .Scratch.Get "fingerprint" -}}
 

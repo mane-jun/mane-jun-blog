@@ -208,6 +208,12 @@ enableEmoji = true
     cursorChar = "|"
     duration = -1
 
+  # 검색엔진 소유 확인 코드 (HTML 태그 방식의 content 값만 넣음)
+  # google은 테마가, naver는 layouts/_partials/head/link.html이 <meta>로 출력
+  [params.verification]
+    google = ""
+    naver = ""
+
   [params.seo]
     image = ""
     thumbnailUrl = ""
