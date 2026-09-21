@@ -93,6 +93,7 @@ summary: "목록에 보일 한 줄 요약"
 - `draft: false`여야 사이트에 노출됩니다. `draft: true`는 로컬(`hugo server -D`)에서만 보입니다.
 - 폴더명이 URL이 됩니다 (예: `content/posts/my-post/index.md` → `/posts/my-post/`).
 - 이미지는 같은 폴더에 넣고 `![설명](파일명.png)`처럼 상대경로로 참조하세요. 글과 이미지가 한 폴더에 묶여 있어야 글을 옮기거나 지울 때 이미지도 함께 따라갑니다.
+- 링크를 공유할 때 보이는 썸네일은 기본으로 개구리 이미지(`static/images/og.jpg`)입니다. 글마다 따로 쓰려면 글 폴더의 이미지를 front matter에 `images: ["파일명.png"]`로 지정하거나, 파일 이름을 `cover.png`처럼 `cover`/`feature`/`thumbnail`로 시작하게 두면 됩니다.
 - 기존 글의 내용·카테고리·태그는 해당 `index.md`를 직접 고치면 다음 배포 때 반영됩니다.
 
 ### 카테고리 / 태그

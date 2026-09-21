@@ -71,7 +71,7 @@ enableEmoji = true
   dateFormat = "2006-01-02"
   title = "mane-jun's log"
   description = "개발 기록, 일상, 생각을 남기는 공간"
-  images = []
+  images = ["images/og.jpg"]
 
   [params.author]
     name = "mane-jun"
