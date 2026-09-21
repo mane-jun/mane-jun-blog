@@ -9,7 +9,7 @@
     "OAUTH_SCOPE": "public_repo",
     "GITHUB_REPO": "mane-jun/mane-jun-blog",
     "CF_ACCOUNT_ID": "86f392104768d78e18ff5beaf9fbfc90",
-    "CF_SITE_TAG": ""
+    "CF_SITE_TAG": "191dfd7f2dbe4e27aa07e5befe45b41f"
   },
   "secrets": {
     "required": ["GITHUB_OAUTH_ID", "GITHUB_OAUTH_SECRET", "OAUTH_STATE_SECRET", "CF_API_TOKEN"]
