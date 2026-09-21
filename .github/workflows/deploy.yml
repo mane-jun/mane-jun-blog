@@ -67,6 +67,10 @@ jobs:
           key: hugo-resources-${{ github.sha }}
           restore-keys: hugo-resources-
 
+      # Hugo가 Git 기록에서 한글 파일명 글의 수정일을 찾을 수 있게, Git이 경로를 ì… 같은 코드 대신 그대로 출력하게 한다.
+      - name: Keep non-ASCII paths readable for Hugo's Git info
+        run: git config core.quotepath false
+
       - name: Build with Hugo
         env:
           HUGO_ENVIRONMENT: production
