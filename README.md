@@ -154,7 +154,7 @@ tags: ["언리얼엔진", "리버싱"]
 관리자 글 목록 화면 오른쪽 아래의 **방문 통계** 버튼을 누르면 통계 페이지(`/admin/stats.html`)가 열립니다. Cloudflare에 로그인하지 않아도, 관리자 페이지에 GitHub로 로그인한 상태면 휴대폰에서도 볼 수 있습니다.
 
 - 최근 7일 / 30일의 조회수·방문 수, 일자별 조회수 막대, 많이 본 페이지(글 제목으로 표시), 유입 경로, 국가.
-- 값은 Cloudflare Web Analytics 기준 근사치이고, 날짜는 UTC 기준, 결과는 최대 5분 캐시됩니다.
+- 값은 Cloudflare Web Analytics 기준 근사치(봇 제외)이고, 날짜는 UTC 기준, 결과는 최대 5분 캐시됩니다. Cloudflare는 조회 기간이 길수록 표본을 듬성듬성 뽑아(30일을 한 번에 조회하면 약 12배) 숫자가 크게 틀어지므로, Worker가 7일씩 나눠 조회한 뒤 합칩니다.
 - 이 저장소에 쓰기 권한이 있는 GitHub 계정만 볼 수 있습니다. 더 자세한 분석은 페이지 위의 **Cloudflare에서 자세히 보기 ↗**로 봅니다.
 - 동작 방식: 통계 페이지가 관리자 로그인 토큰으로 로그인 Worker의 `/stats`를 부르고, Worker가 GitHub에서 쓰기 권한을 확인한 뒤 Cloudflare GraphQL API로 통계를 가져옵니다. Cloudflare API 토큰은 Worker 밖으로 나가지 않습니다. 코드는 [stats.js](oauth-worker/src/stats.js), [stats.html](static/admin/stats.html).
 

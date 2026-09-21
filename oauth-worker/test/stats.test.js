@@ -27,14 +27,15 @@ const jsonResponse = (body, status = 200) => new Response(JSON.stringify(body), 
   status, headers: { 'content-type': 'application/json' },
 });
 
+// One 7-day window: GraphQL aliases are suffixed with the window index.
 const graphqlAccount = {
-  daily: [
+  daily0: [
     { count: 5, sum: { visits: 3 }, dimensions: { date: '2026-09-16' } },
     { count: 8, sum: { visits: 4 }, dimensions: { date: '2026-09-21' } },
   ],
-  pages: [{ count: 9, dimensions: { requestPath: '/mane-jun-blog/' } }],
-  referers: [{ count: 4, dimensions: { refererHost: '' } }, { count: 2, dimensions: { refererHost: 'google.com' } }],
-  countries: [{ count: 13, dimensions: { countryName: 'KR' } }],
+  pages0: [{ count: 9, dimensions: { requestPath: '/mane-jun-blog/' } }],
+  referers0: [{ count: 4, dimensions: { refererHost: '' } }, { count: 2, dimensions: { refererHost: 'google.com' } }],
+  countries0: [{ count: 13, dimensions: { countryName: 'KR' } }],
 };
 
 // First call: GitHub repository permission check. Second call: Cloudflare GraphQL.
@@ -126,10 +127,47 @@ describe('OAuth Worker /stats', () => {
     const request = JSON.parse(init.body);
     expect(url).toBe('https://api.cloudflare.com/client/v4/graphql');
     expect(init.headers.Authorization).toBe('Bearer cf-api-token');
-    expect(request.variables).toEqual({ account: 'account-id', site: 'site-tag', start: '2026-09-15', end: '2026-09-21' });
+    expect(request.variables).toEqual({ account: 'account-id', site: 'site-tag', start0: '2026-09-15', end0: '2026-09-21' });
     expect(init.body).not.toContain('github-token');
     // Every group excludes bots like the Cloudflare dashboard does.
     expect(request.query.match(/rumPageloadEventsAdaptiveGroups\(filter: \{[^}]*, bot: 0 \}/gu)).toHaveLength(4);
+  });
+
+  it('queries 30 days as 7-day windows to avoid coarse sampling, then merges them', async () => {
+    vi.useFakeTimers({ now, toFake: ['Date'] });
+    const fetchMock = stubUpstreams({
+      graphql: {
+        data: {
+          viewer: {
+            accounts: [{
+              daily0: [{ count: 2, sum: { visits: 1 }, dimensions: { date: '2026-08-23' } }],
+              pages0: [{ count: 2, dimensions: { requestPath: '/mane-jun-blog/a/' } }],
+              daily4: [{ count: 10, sum: { visits: 6 }, dimensions: { date: '2026-09-21' } }],
+              pages4: [
+                { count: 7, dimensions: { requestPath: '/mane-jun-blog/b/' } },
+                { count: 3, dimensions: { requestPath: '/mane-jun-blog/a/' } },
+              ],
+            }],
+          },
+        },
+      },
+    });
+    const response = await callStats(statsRequest({ range: '30d' }));
+    const body = await response.json();
+    const request = JSON.parse(fetchMock.mock.calls[1][1].body);
+
+    expect(request.variables).toEqual({
+      account: 'account-id',
+      site: 'site-tag',
+      start0: '2026-08-23', end0: '2026-08-29',
+      start1: '2026-08-30', end1: '2026-09-05',
+      start2: '2026-09-06', end2: '2026-09-12',
+      start3: '2026-09-13', end3: '2026-09-19',
+      start4: '2026-09-20', end4: '2026-09-21',
+    });
+    expect(body.daily).toHaveLength(30);
+    expect(body.totals).toEqual({ views: 12, visits: 7 });
+    expect(body.pages).toEqual([{ path: '/mane-jun-blog/b/', views: 7 }, { path: '/mane-jun-blog/a/', views: 5 }]);
   });
 });
 

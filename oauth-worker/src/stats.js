@@ -6,30 +6,29 @@ const requiredBindings = ['ALLOWED_ORIGIN', 'CF_API_TOKEN', 'CF_ACCOUNT_ID', 'CF
 const cacheSeconds = 300;
 const DAY_MS = 24 * 60 * 60 * 1000;
 
-// bot: 0 excludes bot traffic, matching the Cloudflare dashboard's default "Exclude bots" view.
-const query = `query ($account: string, $site: string, $start: Date, $end: Date) {
+// Cloudflare samples more coarsely the longer the queried date range (7 days ≈ 1.3x, 30 days ≈ 12x), so longer
+// ranges are queried as windows of at most 7 days in one request and merged. bot: 0 excludes bot traffic, matching
+// the Cloudflare dashboard's default "Exclude bots" view.
+const WINDOW_DAYS = 7;
+const TOP_LIMIT = 10;
+const groups = (i) => {
+  const filter = `filter: { siteTag: $site, date_geq: $start${i}, date_leq: $end${i}, bot: 0 }`;
+  return `
+      daily${i}: rumPageloadEventsAdaptiveGroups(${filter}, limit: ${WINDOW_DAYS}, orderBy: [date_ASC]) { count sum { visits } dimensions { date } }
+      pages${i}: rumPageloadEventsAdaptiveGroups(${filter}, limit: 20, orderBy: [count_DESC]) { count dimensions { requestPath } }
+      referers${i}: rumPageloadEventsAdaptiveGroups(${filter}, limit: 20, orderBy: [count_DESC]) { count dimensions { refererHost } }
+      countries${i}: rumPageloadEventsAdaptiveGroups(${filter}, limit: 20, orderBy: [count_DESC]) { count dimensions { countryName } }`;
+};
+export const buildQuery = (windowCount) => {
+  const indexes = Array.from({ length: windowCount }, (_, i) => i);
+  const variables = indexes.map((i) => `$start${i}: Date, $end${i}: Date`).join(', ');
+  return `query ($account: string, $site: string, ${variables}) {
   viewer {
-    accounts(filter: { accountTag: $account }) {
-      daily: rumPageloadEventsAdaptiveGroups(filter: { siteTag: $site, date_geq: $start, date_leq: $end, bot: 0 }, limit: 100, orderBy: [date_ASC]) {
-        count
-        sum { visits }
-        dimensions { date }
-      }
-      pages: rumPageloadEventsAdaptiveGroups(filter: { siteTag: $site, date_geq: $start, date_leq: $end, bot: 0 }, limit: 10, orderBy: [count_DESC]) {
-        count
-        dimensions { requestPath }
-      }
-      referers: rumPageloadEventsAdaptiveGroups(filter: { siteTag: $site, date_geq: $start, date_leq: $end, bot: 0 }, limit: 10, orderBy: [count_DESC]) {
-        count
-        dimensions { refererHost }
-      }
-      countries: rumPageloadEventsAdaptiveGroups(filter: { siteTag: $site, date_geq: $start, date_leq: $end, bot: 0 }, limit: 10, orderBy: [count_DESC]) {
-        count
-        dimensions { countryName }
-      }
+    accounts(filter: { accountTag: $account }) {${indexes.map(groups).join('')}
     }
   }
 }`;
+};
 
 const isoDate = (time) => new Date(time).toISOString().slice(0, 10);
 
@@ -57,6 +56,25 @@ async function hasPushAccess(token, repo) {
   }
 }
 
+// Adds up the rows of every window by one dimension value, largest first.
+const mergeTop = (account, windowCount, key, dimension) => {
+  const totals = new Map();
+  for (let i = 0; i < windowCount; i += 1) {
+    for (const row of account[`${key}${i}`] ?? []) {
+      const value = row.dimensions[dimension];
+      totals.set(value, (totals.get(value) ?? 0) + row.count);
+    }
+  }
+  return [...totals].map(([value, count]) => ({ count, dimensions: { [dimension]: value } })).sort((a, b) => b.count - a.count);
+};
+
+export const mergeWindows = (account, windowCount) => ({
+  daily: Array.from({ length: windowCount }, (_, i) => account[`daily${i}`] ?? []).flat(),
+  pages: mergeTop(account, windowCount, 'pages', 'requestPath'),
+  referers: mergeTop(account, windowCount, 'referers', 'refererHost'),
+  countries: mergeTop(account, windowCount, 'countries', 'countryName'),
+});
+
 // Cloudflare GraphQL rows → the small shape stats.html renders. Missing days are filled with zeros.
 export function summarize(account, start, days) {
   const byDate = new Map((account.daily ?? []).map((row) => [row.dimensions.date, row]));
@@ -67,7 +85,8 @@ export function summarize(account, start, days) {
   });
   const top = (rows, dimension, name) => (rows ?? [])
     .map((row) => ({ [name]: row.dimensions[dimension] || '', views: row.count }))
-    .filter((row) => row[name] !== '');
+    .filter((row) => row[name] !== '')
+    .slice(0, TOP_LIMIT);
   return {
     daily,
     totals: {
@@ -84,14 +103,21 @@ async function fetchStats(env, range, now) {
   const days = ranges[range];
   const end = isoDate(now);
   const start = isoDate(now - (days - 1) * DAY_MS);
+  const windowCount = Math.ceil(days / WINDOW_DAYS);
+  const windowVariables = {};
+  for (let i = 0; i < windowCount; i += 1) {
+    const windowStart = Date.parse(start) + i * WINDOW_DAYS * DAY_MS;
+    windowVariables[`start${i}`] = isoDate(windowStart);
+    windowVariables[`end${i}`] = isoDate(Math.min(windowStart + (WINDOW_DAYS - 1) * DAY_MS, Date.parse(end)));
+  }
   let response;
   try {
     response = await fetch(graphqlUrl, {
       method: 'POST',
       headers: { Authorization: `Bearer ${env.CF_API_TOKEN}`, 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        query,
-        variables: { account: env.CF_ACCOUNT_ID, site: env.CF_SITE_TAG, start, end },
+        query: buildQuery(windowCount),
+        variables: { account: env.CF_ACCOUNT_ID, site: env.CF_SITE_TAG, ...windowVariables },
       }),
     });
   } catch (error) {
@@ -105,13 +131,13 @@ async function fetchStats(env, range, now) {
     console.error('Cloudflare GraphQL request failed', response.status, JSON.stringify(body?.errors ?? null));
     return null;
   }
-  return { range, start, end, ...summarize(account, start, days) };
+  return { range, start, end, ...summarize(mergeWindows(account, windowCount), start, days) };
 }
 
 // Stats are the same for every authorized user, so they are cached per range only, after the permission check.
 async function cachedStats(env, range, now) {
   const cache = typeof caches === 'undefined' ? null : caches.default;
-  const key = new Request(`https://stats-cache.internal/v2-no-bots/${env.CF_SITE_TAG}/${range}`);
+  const key = new Request(`https://stats-cache.internal/v3-windows/${env.CF_SITE_TAG}/${range}`);
   const hit = await cache?.match(key);
   if (hit) return hit.json();
   const stats = await fetchStats(env, range, now);
