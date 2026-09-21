@@ -2,12 +2,12 @@ const scriptEscapes = {
   '<': '\\u003c',
   '>': '\\u003e',
   '&': '\\u0026',
-  ' ': '\\u2028',
-  ' ': '\\u2029',
+  '\u2028': '\\u2028',
+  '\u2029': '\\u2029',
 };
 
 // JSON literal that is safe to embed inside an inline <script> element.
-const toScriptLiteral = (value) => JSON.stringify(value).replace(/[<>&  ]/gu, (character) => scriptEscapes[character]);
+const toScriptLiteral = (value) => JSON.stringify(value).replace(/[<>&\u2028\u2029]/gu, (character) => scriptEscapes[character]);
 
 export function createCallbackPage({ status, payload, origin }) {
   const message = `authorization:github:${status}:${JSON.stringify(payload)}`;
