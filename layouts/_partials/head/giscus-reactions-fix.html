@@ -1,0 +1,15 @@
+{{- /* LoveIt은 다크/라이트 모드를 바꿀 때 Giscus에 reactionsEnabled: false를 보내 댓글 반응 버튼을 없앤다
+     (themes/LoveIt/assets/js/theme.js의 _giscusOnSwitchTheme). 모드가 바뀐 직후 설정값으로 다시 켠다.
+     MutationObserver 콜백은 테마의 클릭 처리(postMessage)가 끝난 뒤 실행되므로 이 메시지가 마지막에 도착한다. */ -}}
+{{- with site.Params.page.comment.giscus -}}
+{{- if and .enable (eq (string .reactionsEnabled) "1") -}}
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        new MutationObserver(function () {
+            var frame = document.querySelector('iframe.giscus-frame');
+            if (frame) frame.contentWindow.postMessage({ giscus: { setConfig: { reactionsEnabled: true } } }, 'https://giscus.app');
+        }).observe(document.body, { attributes: true, attributeFilter: ['theme'] });
+    });
+</script>
+{{- end -}}
+{{- end -}}

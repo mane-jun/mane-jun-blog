@@ -86,6 +86,32 @@ describe('Decap CMS configuration', () => {
     expect(field('body').default.trim()).toBe(await templateBody(templatePath));
   });
 
+  it('offers a development post collection prefilled from its template', async () => {
+    const config = parse(await read('static/admin/config.yml'));
+    const posts = config.collections.find((collection) => collection.name === 'posts');
+    const dev = config.collections.find((collection) => collection.name === 'dev');
+    const field = (fieldName) => dev.fields.find((candidate) => candidate.name === fieldName);
+    const schema = ({ default: _default, ...rest }) => rest;
+
+    expect(dev).toMatchObject({
+      label: '개발글',
+      folder: posts.folder,
+      create: true,
+      path: posts.path,
+      slug: posts.slug,
+      media_folder: posts.media_folder,
+      public_folder: posts.public_folder,
+      summary: posts.summary,
+      sortable_fields: posts.sortable_fields,
+      view_filters: posts.view_filters,
+      filter: { field: 'categories', value: '개발' },
+    });
+    expect(dev.fields.map(schema)).toEqual(posts.fields.map(schema));
+    expect(field('draft').default).toBe(true);
+    expect(field('categories').default).toEqual(['개발']);
+    expect(field('body').default.trim()).toBe(await templateBody('개발글_양식.md'));
+  });
+
   it('loads the retrospective title helper on the administrator page', async () => {
     const html = await read('static/admin/index.html');
 

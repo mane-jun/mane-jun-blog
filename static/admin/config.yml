@@ -56,6 +56,56 @@ collections:
       - &summary_field { label: 요약, name: summary, widget: text, required: false }
       - { label: 본문, name: body, widget: markdown }
 
+  # 개발 글 컬렉션: 같은 글 폴더를 카테고리 "개발"로 걸러 보여주고, 새 글을 개발글_양식.md 본문으로 채운다.
+  # 폴더명은 일반 글과 같이 날짜-제목이다. 본문 기본값은 개발글_양식.md 본문과 같아야 한다(tests/cms-config.test.js).
+  - name: dev
+    label: 개발글
+    label_singular: 개발글
+    folder: content/posts
+    create: true
+    path: "{{slug}}/index"
+    slug: "{{year}}-{{month}}-{{day}}-{{slug}}"
+    filter: { field: categories, value: 개발 }
+    media_folder: ""
+    public_folder: ""
+    summary: *list_summary
+    sortable_fields: *sortable_fields
+    view_filters: *view_filters
+    fields:
+      - *title_field
+      - *date_field
+      - *draft_field
+      - label: 카테고리
+        name: categories
+        widget: select
+        multiple: true
+        options: *category_options
+        default: [개발]
+      - { label: 태그, name: tags, widget: list, required: false }
+      - *summary_field
+      - label: 본문
+        name: body
+        widget: markdown
+        default: |
+          ## 한 줄 요약
+
+          ## 배경
+          - 하려던 것:
+          - 환경:
+
+          ## 문제
+          - 증상:
+          - 에러 메시지:
+
+          ## 원인
+
+          ## 해결
+
+          ## 배운 점
+
+          ## 참고 자료
+          - 링크:
+
   # 회고 전용 컬렉션: 같은 글 폴더를 태그로 걸러 보여주고, 새 글을 양식으로 채운다.
   # 본문 기본값은 저장소 루트의 일간·주간·월간회고_양식.md 본문과 같아야 한다(tests/cms-config.test.js).
   # 새 글 제목은 static/admin/retro-title.js가 채운다. 폴더명은 제목을 따른다(예: 2026-09-21-일간회고).

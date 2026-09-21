@@ -6,6 +6,12 @@
       "runtimeExecutable": "hugo",
       "runtimeArgs": ["server", "--port", "1313", "--disableFastRender"],
       "port": 1313
+    },
+    {
+      "name": "hugo-production",
+      "runtimeExecutable": "hugo",
+      "runtimeArgs": ["server", "--port", "1314", "--disableFastRender", "--environment", "production"],
+      "port": 1314
     }
   ]
 }
