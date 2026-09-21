@@ -131,7 +131,7 @@ enableEmoji = true
     [params.home.profile]
       enable = true
       gravatarEmail = ""
-      avatarURL = ""
+      avatarURL = "images/avatar.jpg"
       title = "mane-jun's log 👋"
       subtitle = "개발 기록, 일상, 생각을 남기는 공간입니다."
       typeit = true
