@@ -1,0 +1,16 @@
+{
+  "name": "mane-jun-blog-tooling",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "vitest run",
+    "test:cms": "vitest run tests/cms-config.test.js",
+    "test:oauth": "vitest run oauth-worker/test",
+    "deploy:oauth": "wrangler deploy --config oauth-worker/wrangler.jsonc"
+  },
+  "devDependencies": {
+    "vitest": "~4.1.0",
+    "wrangler": "^4.59.1",
+    "yaml": "^2.8.1"
+  }
+}

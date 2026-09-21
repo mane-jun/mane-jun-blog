@@ -1,0 +1,52 @@
+backend:
+  name: github
+  repo: mane-jun/mane-jun-blog
+  branch: main
+  base_url: http://127.0.0.1:8787
+  auth_endpoint: auth
+  auth_scope: public_repo
+
+site_url: https://mane-jun.github.io/mane-jun-blog/
+display_url: https://mane-jun.github.io/mane-jun-blog/
+locale: ko
+
+slug:
+  encoding: unicode
+  clean_accents: false
+  sanitize_replacement: "-"
+
+media_folder: static/images/uploads
+public_folder: /mane-jun-blog/images/uploads
+
+collections:
+  - name: posts
+    label: 글
+    label_singular: 글
+    folder: content/posts
+    create: true
+    path: "{{slug}}/index"
+    slug: "{{year}}-{{month}}-{{day}}-{{slug}}"
+    media_folder: ""
+    public_folder: ""
+    summary: "{{title}} — {{date}} — {{categories}} — draft={{draft}}"
+    sortable_fields: [date, title, draft]
+    view_filters:
+      - { label: 초안, field: draft, pattern: true }
+      - { label: 공개, field: draft, pattern: false }
+    fields:
+      - { label: 제목, name: title, widget: string }
+      - label: 작성일
+        name: date
+        widget: datetime
+        default: "{{now}}"
+        format: "YYYY-MM-DDTHH:mm:ssZ"
+      - { label: 초안, name: draft, widget: boolean, default: true }
+      - label: 카테고리
+        name: categories
+        widget: select
+        multiple: true
+        options: [개발, 회고, 생각, 기타]
+        default: [기타]
+      - { label: 태그, name: tags, widget: list, required: false }
+      - { label: 요약, name: summary, widget: text, required: false }
+      - { label: 본문, name: body, widget: markdown }
