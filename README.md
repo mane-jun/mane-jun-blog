@@ -122,6 +122,10 @@ comment: false                  # 선택: 이 글만 댓글 끄기
 
 ## 사이트 기능
 
+### 홈 화면
+
+홈의 글 목록에는 **일간회고가 나오지 않습니다.** 매일 쓰는 일간회고에 개발 글이 밀려나지 않도록 뺀 것이고, 일간회고는 [회고 모아보기](#회고-모아보기)·전체글·카테고리·태그 페이지와 RSS에는 그대로 나옵니다. 홈에서 뺄 태그는 [hugo.toml](hugo.toml)의 `[params.home.posts] excludeTags`에서 바꿉니다.
+
 ### 회고 모아보기
 
 상단 메뉴 **회고**(`/retro/`)에서 회고를 한눈에 봅니다.
@@ -226,6 +230,7 @@ mane-jun-blog/
 
 | 파일 | 종류 | 하는 일 |
 | --- | --- | --- |
+| [layouts/home.html](layouts/home.html) | 테마 복사본 | 홈 글 목록에서 `excludeTags` 태그(일간회고) 글 제외 |
 | [layouts/posts/single.html](layouts/posts/single.html) | 테마 복사본 | 글 페이지에 시리즈 목록(본문 위)·이전/다음 편(본문 아래) 추가 |
 | [layouts/_partials/head/link.html](layouts/_partials/head/link.html) | 테마 복사본 | 아이콘 경로를 `/mane-jun-blog/` 하위로, 네이버 인증 태그, 아래 두 스크립트 포함 |
 | [layouts/_partials/plugin/share.html](layouts/_partials/plugin/share.html) | 테마 복사본 | 공유 버튼에 "링크 복사" 추가 |
