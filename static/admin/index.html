@@ -27,9 +27,11 @@
         display: none;
       }
     </style>
+    <link rel="stylesheet" href="editor-mobile.css" />
   </head>
   <body>
     <a id="analytics-link" href="stats.html">방문 통계</a>
+    <button id="preview-toggle" type="button" aria-pressed="false">미리보기</button>
     <script>
       // Hide the analytics shortcut while editing an entry so it never covers the editor.
       const analyticsLink = document.getElementById('analytics-link');
@@ -38,6 +40,19 @@
       };
       window.addEventListener('hashchange', syncAnalyticsLink);
       syncAnalyticsLink();
+
+      // On a phone the editor shows either the fields or the preview (editor-mobile.css); this button switches between them.
+      // Decap renders the preview only while its own preview toggle is on, and that toggle is hidden on phones, so turn it on.
+      if (matchMedia('(max-width: 799px)').matches) localStorage.removeItem('cms.preview-visible');
+      const previewToggle = document.getElementById('preview-toggle');
+      const showPreview = (visible) => {
+        document.body.classList.toggle('admin-show-preview', visible);
+        previewToggle.setAttribute('aria-pressed', String(visible));
+        previewToggle.textContent = visible ? '편집' : '미리보기';
+      };
+      previewToggle.addEventListener('click', () => showPreview(!document.body.classList.contains('admin-show-preview')));
+      // Every entry opens on the fields.
+      window.addEventListener('hashchange', () => showPreview(false));
     </script>
     <script src="https://unpkg.com/decap-cms@3.15.1/dist/decap-cms.js"></script>
     <script src="preview.js"></script>

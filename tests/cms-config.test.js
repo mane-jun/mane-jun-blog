@@ -144,6 +144,20 @@ describe('Decap CMS configuration', () => {
     expect(html).toMatch(/<script type="module">\s*import \{ installRetroTitle \} from '\.\/retro-title\.js';\s*installRetroTitle\(\);\s*<\/script>/u);
   });
 
+  it('lays the editor out for phones and switches between fields and preview at the same width', async () => {
+    const html = await read('static/admin/index.html');
+    const css = await read('static/admin/editor-mobile.css');
+    const cssQuery = css.match(/@media \(max-width: (\d+)px\)/u)?.[1];
+    const scriptQuery = html.match(/matchMedia\('\(max-width: (\d+)px\)'\)/u)?.[1];
+
+    expect(html).toContain('<link rel="stylesheet" href="editor-mobile.css" />');
+    expect(html).toMatch(/<button id="preview-toggle" type="button"/u);
+    expect(cssQuery).toBeDefined();
+    expect(scriptQuery).toBe(cssQuery);
+    // Decap stops rendering the preview once this key is 'false', which would leave the button nothing to show.
+    expect(html).toContain("localStorage.removeItem('cms.preview-visible')");
+  });
+
   it('links the administrator to the stats page, which calls the same Worker as the CMS', async () => {
     const html = await read('static/admin/index.html');
     const stats = await read('static/admin/stats.html');

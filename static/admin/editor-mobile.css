@@ -1,0 +1,182 @@
+/*
+ * Decap CMS 글 편집 화면을 휴대폰 폭에 맞춘다.
+ * Decap은 편집 화면을 최소 800px로 그리고 입력칸과 미리보기를 좌우로 나란히 두어서, 휴대폰에서는 화면이 잘리고
+ * 가로로 밀린다. 좁은 화면에서는 한 번에 한 칸(입력 또는 미리보기)만 전체 폭으로 보이게 하고, 둘 사이는
+ * index.html의 "미리보기" 버튼으로 오간다.
+ * 선택자는 index.html에 고정한 Decap 버전의 클래스 이름 뒷부분(css-해시-이름)에 기대므로, 버전을 올리면 다시 확인한다.
+ * #nc-root를 붙이는 이유: Decap 스타일이 이 파일보다 나중에 들어오므로 선택자가 더 구체적이어야 이긴다.
+ */
+#preview-toggle {
+  display: none;
+}
+
+@media (max-width: 799px) {
+  /* 미리보기가 그려진 편집 화면에서만 보인다. */
+  body:has(#nc-root .SplitPane) #preview-toggle {
+    display: block;
+    position: fixed;
+    right: 16px;
+    bottom: 16px;
+    z-index: 1000;
+    padding: 12px 18px;
+    border: 0;
+    border-radius: 999px;
+    background: #313d3e;
+    color: #fff;
+    font: 600 15px/1 system-ui, -apple-system, "Segoe UI", "Malgun Gothic", sans-serif;
+    box-shadow: 0 2px 8px rgb(0 0 0 / 25%);
+    cursor: pointer;
+  }
+
+  #nc-root [class*="-EditorContainer"],
+  #nc-root [class*="-EditorContainer"] > [class*="-ToolbarContainer"] {
+    min-width: 0;
+  }
+
+  /* 상단 도구 막대: 사이트 주소·프로필 메뉴는 뺀다(목록 화면에 있다). */
+  #nc-root [class*="-EditorContainer"] {
+    padding-top: 56px;
+  }
+
+  #nc-root [class*="-EditorContainer"] > [class*="-ToolbarContainer"] {
+    height: 56px;
+  }
+
+  /* 버튼이 자리를 먼저 차지하고, 모자라면 왼쪽 "…컬렉션에 작성하는 중"·저장 상태 문구가 말줄임된다. */
+  #nc-root [class*="-ToolbarSectionBackLink"] {
+    flex: 1 1 auto;
+    min-width: 0;
+    padding: 0 10px;
+  }
+
+  #nc-root [class*="-BackArrow"] {
+    margin-right: 8px;
+  }
+
+  #nc-root [class*="-ToolbarSectionBackLink"] > div:last-child {
+    min-width: 0;
+  }
+
+  #nc-root [class*="-BackCollection"],
+  #nc-root [class*="-BackStatus"] {
+    display: block;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+
+  #nc-root [class*="-BackCollection"] {
+    font-size: 13px;
+  }
+
+  #nc-root [class*="-BackStatus"] {
+    margin-top: 4px;
+    font-size: 12px;
+  }
+
+  #nc-root [class*="-ToolbarSectionMain"] {
+    flex: 0 0 auto;
+    padding: 0 6px;
+  }
+
+  #nc-root [class*="-ToolbarSectionMain"] [class*="-ToolbarDropdown"] {
+    margin: 0 4px;
+  }
+
+  #nc-root [class*="-ToolbarSectionMain"] [class*="-PublishButton"] {
+    padding: 0 28px 0 12px;
+  }
+
+  #nc-root [class*="-ToolbarSectionMain"] [class*="-ToolbarButton"] {
+    margin: 0 4px;
+    padding: 0 10px;
+  }
+
+  /* 오른쪽 끝의 배포 미리보기 버튼("미리보기 확인")은 아래 미리보기 버튼과 헷갈리고 자리도 없어서 뺀다. */
+  #nc-root [class*="-ToolbarSubSectionLast"],
+  #nc-root [class*="-ToolbarSectionMeta"],
+  #nc-root [class*="-ViewControls"] {
+    display: none;
+  }
+
+  /* 입력칸·미리보기: 한 칸씩 전체 폭으로. Pane 너비는 Decap이 style 속성으로 넣어서 !important가 필요하다. */
+  #nc-root .SplitPane .Pane1 {
+    width: 100% !important;
+  }
+
+  #nc-root .SplitPane .Resizer,
+  #nc-root .SplitPane .Pane2 {
+    display: none;
+  }
+
+  /* 미리보기는 입력칸 위에 덮는다. 입력칸을 display: none으로 빼지 않아야 돌아왔을 때 스크롤 위치가 그대로다. */
+  body.admin-show-preview #nc-root .SplitPane .Pane1 {
+    visibility: hidden;
+  }
+
+  body.admin-show-preview #nc-root .SplitPane .Pane2 {
+    display: block;
+    position: absolute !important;
+    inset: 0;
+    z-index: 1;
+    background: #fff;
+  }
+
+  #nc-root [class*="-PreviewPaneContainer-ControlPaneContainer"] {
+    padding: 0 12px;
+  }
+
+  #nc-root [class*="-PreviewPaneContainer-ControlPaneContainer"] > [class*="-ControlPaneContainer"] {
+    padding-bottom: 80px; /* 마지막 입력칸이 미리보기 버튼에 가리지 않게 */
+  }
+
+  /*
+   * iOS는 16px보다 작은 입력칸을 누르면 화면을 확대하고 되돌리지 않는다.
+   * 카테고리 선택칸은 글자 크기를 style 속성으로 물려받게 해 두어서 !important가 필요하다.
+   */
+  #nc-root [class*="-EditorContainer"] input,
+  #nc-root [class*="-EditorContainer"] textarea,
+  #nc-root [class*="-EditorContainer"] [contenteditable] {
+    font-size: 16px !important;
+  }
+
+  /* 작성일: 날짜 입력과 "현재 시각"·"지우기" 버튼이 좁으면 줄을 나눈다. */
+  #nc-root [class*="-DateTimeControl"] {
+    flex-wrap: wrap;
+    gap: 12px;
+    padding: 12px 16px;
+  }
+
+  #nc-root [class*="-DateTimeControl"] [class*="-Buttons"] {
+    gap: 8px;
+  }
+
+  #nc-root [class*="-DateTimeControl"] [class*="-Buttons"] button {
+    padding: 6px 12px;
+    white-space: nowrap;
+  }
+
+  /*
+   * 본문 편집기 도구 막대는 스크롤해도 위에 붙어 있어서, 키보드가 올라오면 글 쓸 자리를 그만큼 가린다.
+   * 서식 버튼 한 줄 + 리치 텍스트/마크다운 전환 한 줄로 줄인다(폭 360px 이상에서 버튼이 한 줄에 들어간다).
+   */
+  #nc-root [class*="-EditorControlBar"] [class*="-ToolbarContainer"] {
+    flex-wrap: wrap;
+    gap: 2px;
+    min-height: 0;
+    padding: 4px 8px 6px;
+  }
+
+  #nc-root [class*="-EditorControlBar"] [class*="-StyledToolbarButton"] {
+    padding: 4px;
+  }
+
+  #nc-root [class*="-EditorControlBar"] [class*="-ToolbarToggle"] {
+    margin: 0 4px;
+    font-size: 13px;
+  }
+
+  #nc-root [class*="-EditorControlBar"] [class*="-ToolbarToggleLabel"] {
+    min-width: 0;
+  }
+}
