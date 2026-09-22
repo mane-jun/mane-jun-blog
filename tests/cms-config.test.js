@@ -12,12 +12,14 @@ const templateBody = async (path) => (await read(path))
   .trim();
 
 describe('Decap CMS configuration', () => {
-  it('pins the CMS script and exposes the Hugo post collection', async () => {
+  it('loads the patched CMS bundle and exposes the Hugo post collection', async () => {
     const html = await read('static/admin/index.html');
     const config = parse(await read('static/admin/config.yml'));
     const posts = config.collections.find(({ name }) => name === 'posts');
 
-    expect(html).toContain('decap-cms@3.15.1/dist/decap-cms.js');
+    // scripts/patch-decap.mjs builds decap-cms.js from the pinned Decap release (see tests/patch-decap.test.js).
+    expect(html).toContain('<script src="decap-cms.js"></script>');
+    expect(html).not.toContain('unpkg.com/decap-cms');
     expect(config.backend).toMatchObject({
       name: 'github',
       repo: 'mane-jun/mane-jun-blog',
@@ -142,13 +144,6 @@ describe('Decap CMS configuration', () => {
     const html = await read('static/admin/index.html');
 
     expect(html).toMatch(/<script type="module">\s*import \{ installRetroTitle \} from '\.\/retro-title\.js';\s*installRetroTitle\(\);\s*<\/script>/u);
-  });
-
-  it('loads the Android plain body editor after the CMS', async () => {
-    const html = await read('static/admin/index.html');
-    const install = html.search(/<script type="module">\s*import \{ installPlainBody \} from '\.\/plain-body\.js';\s*installPlainBody\(\);\s*<\/script>/u);
-
-    expect(install).toBeGreaterThan(html.indexOf('decap-cms.js'));
   });
 
   it('lays the editor out for phones and switches between fields and preview at the same width', async () => {

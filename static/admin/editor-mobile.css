@@ -3,43 +3,11 @@
  * Decap은 편집 화면을 최소 800px로 그리고 입력칸과 미리보기를 좌우로 나란히 두어서, 휴대폰에서는 화면이 잘리고
  * 가로로 밀린다. 좁은 화면에서는 한 번에 한 칸(입력 또는 미리보기)만 전체 폭으로 보이게 하고, 둘 사이는
  * index.html의 "미리보기" 버튼으로 오간다.
- * 선택자는 index.html에 고정한 Decap 버전의 클래스 이름 뒷부분(css-해시-이름)에 기대므로, 버전을 올리면 다시 확인한다.
+ * 선택자는 scripts/patch-decap.mjs에 고정한 Decap 버전의 클래스 이름 뒷부분(css-해시-이름)에 기대므로, 버전을 올리면 다시 확인한다.
  * #nc-root를 붙이는 이유: Decap 스타일이 이 파일보다 나중에 들어오므로 선택자가 더 구체적이어야 이긴다.
  */
 #preview-toggle {
   display: none;
-}
-
-/* 안드로이드 본문 입력칸(plain-body.js): Decap 본문 편집기처럼 회색 막대 아래 입력칸. 막대는 스크롤해도 위에 붙는다. */
-.plain-body-bar {
-  position: sticky;
-  top: 0;
-  z-index: 1;
-  display: flex;
-  justify-content: flex-end;
-  padding: 6px 8px;
-  border-radius: 0 5px 0 0;
-  background: #dfdfe3;
-}
-
-.plain-body-image {
-  padding: 8px 14px;
-  border: 0;
-  border-radius: 5px;
-  background: #fff;
-  color: #3a69c7;
-  font: 600 14px/1.2 system-ui, -apple-system, "Segoe UI", "Malgun Gothic", sans-serif;
-  cursor: pointer;
-}
-
-#nc-root .plain-body-input {
-  display: block;
-  min-height: 50vh;
-  field-sizing: content; /* 글이 길어지면 입력칸도 같이 늘어난다 */
-  border-radius: 0 0 5px 5px;
-  font-size: 16px;
-  line-height: 1.7;
-  resize: vertical;
 }
 
 @media (max-width: 799px) {

@@ -45,12 +45,14 @@
 
 휴대폰(화면 폭 800px 미만)에서는 편집 화면이 한 칸으로 바뀝니다. 입력칸이 화면 폭에 맞게 나오고, 오른쪽 아래 **미리보기** 버튼으로 미리보기와 편집을 오갑니다(글을 열면 항상 편집부터 보입니다). 상단의 사이트 주소·프로필 메뉴는 편집 화면에서 빠지니 로그아웃은 목록 화면에서 하세요. 코드는 [editor-mobile.css](static/admin/editor-mobile.css). Decap 버전을 올리면 이 파일의 선택자가 맞는지 휴대폰 폭에서 다시 확인하세요.
 
-안드로이드에서는 본문이 서식 버튼 없는 일반 입력칸으로 바뀝니다. Decap 본문 편집기(Slate)가 안드로이드 한글 키보드에서 새 줄 첫 글자를 "ㅇ ㅏ"처럼 쪼개는 버그가 있어서입니다. slate-react 0.126.3에서 고쳐졌지만 Decap은 아직 0.117을 씁니다.
+### 안드로이드 한글 입력 (Decap 패치)
 
-- 제목·목록은 마크다운으로 직접 씁니다(`## 제목`, `- 목록`). 회고 양식도 마크다운 그대로 보입니다.
-- 사진은 입력칸 위 **이미지 넣기** 버튼으로 넣습니다. 커서 자리에 `![](파일명)` 줄이 들어가고, 사진은 글 폴더에 함께 저장됩니다.
-- 방금 올린 사진은 미리보기에 바로 안 보일 수 있습니다. 기존 편집기도 같고, 저장한 뒤 사이트에서는 보입니다.
-- 코드는 [plain-body.js](static/admin/plain-body.js). Decap이 slate-react 0.126.3 이상을 쓰게 되면 이 우회는 없애도 됩니다.
+Decap 본문 편집기(Slate)는 안드로이드 키보드에서 빈 줄 첫 글자의 조합을 끊어서 "안녕"이 "ㅇ안녕"처럼 쪼개집니다(영어 추천 단어도 "hhello"처럼 됨). Slate는 [slate-react 0.126.3](https://github.com/ianstormtaylor/slate/pull/6096)에서 고쳤지만 Decap은 아직 0.117을 쓰고, 0.126은 Decap이 쓰는 것보다 새 Slate 본체를 요구해서 버전만 올릴 수 없습니다.
+
+그래서 관리자는 unpkg의 Decap 대신 그 수정을 옮겨 심은 [static/admin/decap-cms.js](static/admin/decap-cms.js)를 씁니다. 이 파일은 손으로 고치지 않고 [scripts/patch-decap.mjs](scripts/patch-decap.mjs)가 만듭니다: 고정한 버전(3.15.1)의 번들을 받아 해시를 확인하고, 원래 코드 조각이 정확히 한 번씩 있을 때만 바꿉니다.
+
+- Decap 버전을 올리려면 스크립트의 `DECAP_VERSION`·해시를 바꾸고 `node scripts/patch-decap.mjs`를 돌리세요. 원래 코드 조각을 못 찾으면 멈추니, 새 번들에 맞게 패치를 다시 맞추거나 Decap이 slate-react 0.126.3 이상을 쓰게 되면 패치를 빼고 unpkg로 돌아가면 됩니다.
+- `npm test`가 관리자 페이지가 이 파일을 쓰는지, 파일이 스크립트 결과와 맞는지 확인합니다.
 
 ### 공개와 초안
 
@@ -308,9 +310,10 @@ mane-jun-blog/
 │   ├── new-post.ps1               # 새 글 작성 도우미 스크립트
 │   ├── retro-reminder.mjs/.sh     # 회고 확인과 알림 이슈 처리 (회고 알림 워크플로)
 │   ├── scheduled-posts.mjs        # 예약 발행할 글 확인 (배포 워크플로)
-│   └── check-links.mjs            # 빌드 결과의 깨진 링크 검사 (배포 워크플로)
+│   ├── check-links.mjs            # 빌드 결과의 깨진 링크 검사 (배포 워크플로)
+│   └── patch-decap.mjs            # 안드로이드 한글 입력을 고친 Decap 번들 만들기 (손으로 실행)
 ├── static/
-│   ├── admin/                     # 관리자 (Decap CMS) 페이지·설정·미리보기, 통계 페이지
+│   ├── admin/                     # 관리자 (Decap CMS) 페이지·설정·미리보기, 통계 페이지, 패치한 Decap 번들
 │   ├── images/og.jpg              # 링크 공유 기본 썸네일
 │   └── favicon* 등                # 브라우저 탭·홈 화면 아이콘
 ├── tests/                         # CMS 설정·콘텐츠·비밀값 점검 테스트 (npm test)

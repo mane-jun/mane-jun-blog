@@ -54,15 +54,12 @@
       // Every entry opens on the fields.
       window.addEventListener('hashchange', () => showPreview(false));
     </script>
-    <script src="https://unpkg.com/decap-cms@3.15.1/dist/decap-cms.js"></script>
+    <!-- decap-cms 3.15.1 with an Android Hangul input fix, built by scripts/patch-decap.mjs -->
+    <script src="decap-cms.js"></script>
     <script src="preview.js"></script>
     <script type="module">
       import { installRetroTitle } from './retro-title.js';
       installRetroTitle();
-    </script>
-    <script type="module">
-      import { installPlainBody } from './plain-body.js';
-      installPlainBody();
     </script>
   </body>
 </html>
