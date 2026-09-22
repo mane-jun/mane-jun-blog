@@ -1,7 +1,7 @@
 ---
 title: 2026/09/22 일간회고
 date: 2026-09-22T22:20:00+09:00
-draft: true
+draft: false
 categories:
   - 회고
 tags:
