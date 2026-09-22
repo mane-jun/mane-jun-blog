@@ -10,6 +10,38 @@
   display: none;
 }
 
+/* 안드로이드 본문 입력칸(plain-body.js): Decap 본문 편집기처럼 회색 막대 아래 입력칸. 막대는 스크롤해도 위에 붙는다. */
+.plain-body-bar {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  display: flex;
+  justify-content: flex-end;
+  padding: 6px 8px;
+  border-radius: 0 5px 0 0;
+  background: #dfdfe3;
+}
+
+.plain-body-image {
+  padding: 8px 14px;
+  border: 0;
+  border-radius: 5px;
+  background: #fff;
+  color: #3a69c7;
+  font: 600 14px/1.2 system-ui, -apple-system, "Segoe UI", "Malgun Gothic", sans-serif;
+  cursor: pointer;
+}
+
+#nc-root .plain-body-input {
+  display: block;
+  min-height: 50vh;
+  field-sizing: content; /* 글이 길어지면 입력칸도 같이 늘어난다 */
+  border-radius: 0 0 5px 5px;
+  font-size: 16px;
+  line-height: 1.7;
+  resize: vertical;
+}
+
 @media (max-width: 799px) {
   /* 미리보기가 그려진 편집 화면에서만 보인다. */
   body:has(#nc-root .SplitPane) #preview-toggle {

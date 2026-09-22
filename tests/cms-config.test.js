@@ -144,6 +144,13 @@ describe('Decap CMS configuration', () => {
     expect(html).toMatch(/<script type="module">\s*import \{ installRetroTitle \} from '\.\/retro-title\.js';\s*installRetroTitle\(\);\s*<\/script>/u);
   });
 
+  it('loads the Android plain body editor after the CMS', async () => {
+    const html = await read('static/admin/index.html');
+    const install = html.search(/<script type="module">\s*import \{ installPlainBody \} from '\.\/plain-body\.js';\s*installPlainBody\(\);\s*<\/script>/u);
+
+    expect(install).toBeGreaterThan(html.indexOf('decap-cms.js'));
+  });
+
   it('lays the editor out for phones and switches between fields and preview at the same width', async () => {
     const html = await read('static/admin/index.html');
     const css = await read('static/admin/editor-mobile.css');
