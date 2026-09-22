@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>mobile test (temporary)</title>
+  </head>
+  <body>
+    <script>
+      window.CMS_MANUAL_INIT = true;
+      const posts = {
+            '2026-09-21-테스트-글': {
+              'index.md': {
+                content: '---\ntitle: 기분 좋은 수면을 찾아서 조금 긴 제목 테스트\ndate: 2026-09-21T10:00:00+09:00\ndraft: false\ncategories: [생각]\ntags: [수면, 일상, 건강]\nsummary: 요약입니다\n---\n\n## 소제목\n\n본문 문단입니다. 모바일에서 편집하기 편한지 확인합니다. 긴 문장이 줄바꿈되는지 봅니다.\n\n- 목록 하나\n- 목록 둘\n\n```js\nconst veryLongLineOfCode = someFunction(argumentNumberOne, argumentNumberTwo, argumentNumberThree);\n```\n',
+              },
+            },
+          };
+      window.repoFiles = { 'content/posts': posts, content: { posts } };
+    </script>
+    <script src="https://unpkg.com/decap-cms@3.15.1/dist/decap-cms.js"></script>
+    <script src="preview.js"></script>
+    <script>CMS.init({ config: { backend: { name: 'test-repo' } } });</script>
+  </body>
+</html>
