@@ -45,7 +45,12 @@ collections:
         widget: datetime
         default: "{{now}}"
         format: "YYYY-MM-DDTHH:mm:ssZ"
-      - &draft_field { label: 초안, name: draft, widget: boolean, default: true }
+      - &draft_field {
+          label: 초안,
+          name: draft,
+          widget: boolean,
+          default: true,
+        }
       - label: 카테고리
         name: categories
         widget: select
@@ -59,7 +64,12 @@ collections:
         widget: string
         required: false
         hint: 이어지는 글끼리 같은 이름을 쓰면 묶입니다 (예. 리버싱 입문). 글 위에 편 목록이 나오고, 편 순서는 작성일 순입니다.
-      - &summary_field { label: 요약, name: summary, widget: text, required: false }
+      - &summary_field {
+          label: 요약,
+          name: summary,
+          widget: text,
+          required: false,
+        }
       - { label: 본문, name: body, widget: markdown }
 
   # 개발 글 컬렉션: 같은 글 폴더를 카테고리 "개발"로 걸러 보여주고, 새 글을 개발글_양식.md 본문으로 채운다.
@@ -139,7 +149,13 @@ collections:
         multiple: true
         options: *category_options
         default: [회고]
-      - { label: 태그, name: tags, widget: list, required: false, default: [일간회고, 일상] }
+      - {
+          label: 태그,
+          name: tags,
+          widget: list,
+          required: false,
+          default: [일간회고, 일상],
+        }
       - *summary_field
       - label: 본문
         name: body
@@ -150,6 +166,8 @@ collections:
           - 운동: O / X
 
           ## 오늘 한 줄
+
+          ## 오늘의 콘텐츠
 
           ## 오늘 한 일
           - 학교:
@@ -185,7 +203,13 @@ collections:
         multiple: true
         options: *category_options
         default: [회고]
-      - { label: 태그, name: tags, widget: list, required: false, default: [주간회고, 일상] }
+      - {
+          label: 태그,
+          name: tags,
+          widget: list,
+          required: false,
+          default: [주간회고, 일상],
+        }
       - *summary_field
       - label: 본문
         name: body
@@ -236,7 +260,13 @@ collections:
         multiple: true
         options: *category_options
         default: [회고]
-      - { label: 태그, name: tags, widget: list, required: false, default: [월간회고, 일상] }
+      - {
+          label: 태그,
+          name: tags,
+          widget: list,
+          required: false,
+          default: [월간회고, 일상],
+        }
       - *summary_field
       - label: 본문
         name: body
@@ -276,7 +306,17 @@ collections:
         file: content/about.md
         fields:
           - { label: 제목, name: title, widget: string }
-          - { label: 작성일, name: date, widget: datetime, format: "YYYY-MM-DDTHH:mm:ssZ" }
+          - {
+              label: 작성일,
+              name: date,
+              widget: datetime,
+              format: "YYYY-MM-DDTHH:mm:ssZ",
+            }
           - { label: 초안, name: draft, widget: hidden, default: false }
-          - { label: 홈 목록에서 숨김, name: hiddenFromHomePage, widget: hidden, default: true }
+          - {
+              label: 홈 목록에서 숨김,
+              name: hiddenFromHomePage,
+              widget: hidden,
+              default: true,
+            }
           - { label: 본문, name: body, widget: markdown }
