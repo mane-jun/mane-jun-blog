@@ -55,6 +55,19 @@ jobs:
           submodules: recursive
           fetch-depth: 0
 
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Install test dependencies
+        run: npm ci
+
+      # CMS가 index-1.md 같은 숨은 글 파일을 만들었으면 배포 전에 중단한다.
+      - name: Test content and tooling
+        run: npm test
+
       - name: Setup Pages
         id: pages
         uses: actions/configure-pages@v5

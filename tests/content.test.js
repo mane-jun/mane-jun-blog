@@ -14,6 +14,14 @@ describe('post content', () => {
     expect(orphaned).toEqual([]);
   });
 
+  // Hugo renders index.md as the page for a leaf bundle; files such as index-1.md are hidden page resources.
+  it('has no Markdown files hidden behind a post bundle index', () => {
+    const hidden = postDirs.flatMap((dir) => readdirSync(new URL(`${dir}/`, postsDir), { withFileTypes: true })
+      .filter((entry) => entry.isFile() && entry.name.endsWith('.md') && entry.name !== 'index.md')
+      .map((entry) => `${dir}/${entry.name}`));
+    expect(hidden).toEqual([]);
+  });
+
   // Decap CMS parses "...Z" dates as Date objects but "+09:00" dates as strings, and cannot sort a mix of both.
   it('writes every post date in KST offset form', () => {
     const invalid = postDirs
