@@ -1,7 +1,7 @@
 ---
 title: 2026/09 월간회고
 date: 2026-10-05T01:28:00+09:00
-draft: true
+draft: false
 categories:
   - 회고
 tags:
