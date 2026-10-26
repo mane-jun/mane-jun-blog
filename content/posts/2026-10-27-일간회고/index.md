@@ -1,5 +1,5 @@
 ---
-title: 2026/10/27 일간회고
+title: 2026/10/26 일간회고
 date: 2026-10-27T02:55:00+09:00
 draft: false
 categories:
